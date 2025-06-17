@@ -7,13 +7,16 @@ export const metadata = {
   title: 'Confessly',
   description: 'A sacred space for your digital confessions.',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.png', // ✅ updated from .ico to .png
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/png" href="/favicon.png" /> {/* ✅ fallback support */}
+      </head>
       <body className="bg-gradient-to-b from-orange-50 to-amber-100 text-gray-900 text-base flex flex-col min-h-screen">
         {/* Watermark */}
         <div
