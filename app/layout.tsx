@@ -6,10 +6,7 @@ import DynamicFooter from '@/components/DynamicFooter';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <title>Confessly</title>
-      </head>
+
       <body className="bg-gradient-to-b from-orange-50 to-amber-100 text-gray-900 text-base flex flex-col min-h-screen">
         {/* Watermark */}
         <div
