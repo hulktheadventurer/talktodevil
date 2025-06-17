@@ -2,7 +2,11 @@ export default function Head() {
   return (
     <>
       <title>Confessly</title>
-      <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+      <meta property="og:title" content="Confessly" />
+      <meta property="og:description" content="A sacred space for your digital confessions." />
+      <meta property="og:image" content="/og-image.png" />
+      <meta property="og:url" content="https://www.confessly.life/" />
+      <meta property="og:type" content="website" />
     </>
   );
 }
