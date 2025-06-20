@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ConfessionCard from '@/components/ConfessionCard';
 import DonateModal from '@/components/DonateModal';
 
@@ -15,8 +16,9 @@ interface Confession {
 
 export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
-  const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
   const [donateOpen, setDonateOpen] = useState(false);
+  const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
+  const searchParams = useSearchParams();
 
   const fetchConfessions = async () => {
     try {
@@ -28,18 +30,28 @@ export default function WallPage() {
     }
   };
 
-  const refetchCandles = async () => {
-    const res = await fetch('/api/user-candles');
-    const data = await res.json();
-    setAvailableDonationCandles(data.donationCandles || 0);
+  const fetchDonationCandles = async () => {
+    try {
+      const res = await fetch('/api/user-candles');
+      const data = await res.json();
+      setAvailableDonationCandles(data.donationCandles || 0);
+    } catch (err) {
+      console.error('Failed to fetch donation candles');
+    }
   };
 
   useEffect(() => {
     fetchConfessions();
-    refetchCandles();
-    const url = new URL(window.location.href);
-    if (url.searchParams.get('success') === '1') refetchCandles();
+    fetchDonationCandles();
   }, []);
+
+  // Refresh candles if Stripe success
+  useEffect(() => {
+    const success = searchParams.get('success');
+    if (success === '1') {
+      fetchDonationCandles();
+    }
+  }, [searchParams]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-12">
