@@ -15,8 +15,8 @@ interface Confession {
 
 export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
-  const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
+  const [donateOpen, setDonateOpen] = useState(false);
 
   const fetchConfessions = async () => {
     try {
@@ -28,24 +28,17 @@ export default function WallPage() {
     }
   };
 
-  const fetchAvailableCandles = async () => {
-    try {
-      const res = await fetch('/api/user-candles');
-      const data = await res.json();
-      setAvailableDonationCandles(data.donationCandles || 0);
-    } catch (err) {
-      console.error('Failed to fetch donation candles');
-    }
+  const refetchCandles = async () => {
+    const res = await fetch('/api/user-candles');
+    const data = await res.json();
+    setAvailableDonationCandles(data.donationCandles || 0);
   };
 
   useEffect(() => {
     fetchConfessions();
-    fetchAvailableCandles();
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('success') && params.get('candles')) {
-      fetchAvailableCandles();
-    }
+    refetchCandles();
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('success') === '1') refetchCandles();
   }, []);
 
   return (
@@ -58,7 +51,7 @@ export default function WallPage() {
           Light a Donation Candle
         </button>
         {availableDonationCandles > 0 && (
-          <p className="mt-2 text-sm text-amber-700">
+          <p className="text-sm text-amber-700 mt-2">
             You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
           </p>
         )}
