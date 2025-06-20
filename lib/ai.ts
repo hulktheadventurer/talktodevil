@@ -5,17 +5,15 @@ const openai = new OpenAI({
 });
 
 export async function generateReply(message: string): Promise<string> {
-  const prompt = `
-You are a compassionate digital priest named Father. Speak in a warm, pastoral tone.
-Respond to the following confession with empathy, kindness, and spiritual guidance.
-Confession: "${message}"
-Reply as Father:
-`;
+  const systemPrompt = `You are a kind Father. Reply in the same language as the user. Be gentle, supportive, and brief.`;
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.9,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: message },
+    ],
+    temperature: 0.7,
   });
 
   return completion.choices[0].message.content?.trim() || '🙏 The Father has heard your confession. Go in peace.';
