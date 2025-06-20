@@ -11,14 +11,36 @@ export default function ArchivePage() {
   const [selectedBlessingId, setSelectedBlessingId] = useState('');
   const [isDonateOpen, setDonateOpen] = useState(false);
 
-  useEffect(() => {
-    fetch('/api/blessing/all')
-      .then(res => res.json())
-      .then(data => setBlessings(data.blessings || []));
+  const fetchAvailableCandles = async () => {
+    try {
+      const res = await fetch('/api/user-candles');
+      const data = await res.json();
+      setAvailableDonationCandles(data.donationCandles || 0);
+    } catch (err) {
+      console.error('Failed to fetch donation candles');
+    }
+  };
 
-    fetch('/api/user-candles')
-      .then(res => res.json())
-      .then(data => setAvailableDonationCandles(data.donationCandles || 0));
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const blessingsRes = await fetch('/api/blessing/all');
+        const blessingsData = await blessingsRes.json();
+        setBlessings(blessingsData.blessings || []);
+
+        await fetchAvailableCandles();
+      } catch (err) {
+        console.error('Error loading archive data:', err);
+        toast.error('Failed to load archive. Please try again.');
+      }
+    };
+
+    load();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') && params.get('candles')) {
+      fetchAvailableCandles();
+    }
   }, []);
 
   return (

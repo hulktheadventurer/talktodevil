@@ -15,6 +15,16 @@ export default function BlessingPage() {
   const [blessingDonationCount, setBlessingDonationCount] = useState(0);
   const [isDonateOpen, setDonateOpen] = useState(false);
 
+  const fetchAvailableCandles = async () => {
+    try {
+      const res = await fetch('/api/user-candles');
+      const data = await res.json();
+      setAvailableDonationCandles(data.donationCandles || 0);
+    } catch (err) {
+      console.error('Failed to fetch donation candles');
+    }
+  };
+
   useEffect(() => {
     async function load() {
       try {
@@ -28,9 +38,7 @@ export default function BlessingPage() {
         setBlessingCandleCount(countsData.blessingCandleCount || 0);
         setBlessingDonationCount(countsData.blessingDonationCount || 0);
 
-        const candleRes = await fetch('/api/user-candles');
-        const candleData = await candleRes.json();
-        setAvailableDonationCandles(candleData.donationCandles || 0);
+        await fetchAvailableCandles();
       } catch (err) {
         console.error('Error loading blessing data:', err);
         toast.error('Failed to load blessing. Please try again.');
@@ -40,6 +48,11 @@ export default function BlessingPage() {
     }
 
     load();
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') && params.get('candles')) {
+      fetchAvailableCandles();
+    }
   }, []);
 
   const handleApply = async () => {
@@ -74,7 +87,7 @@ export default function BlessingPage() {
         </button>
         {availableDonationCandles > 0 && (
           <p className="text-sm text-amber-700 mt-2">
-            You have {availableDonationCandles} donation candle(s) to apply ✨
+            You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
           </p>
         )}
       </div>
