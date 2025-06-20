@@ -1,10 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DonateModal from './DonateModal';
 
 export default function DynamicFooter() {
   const [isDonateOpen, setIsDonateOpen] = useState(false);
+  const [donationCount, setDonationCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/candle/total')
+      .then(res => res.json())
+      .then(data => setDonationCount(data.totalDonations))
+      .catch(() => setDonationCount(null));
+  }, []);
 
   return (
     <footer className="bg-amber-800 text-center text-sm text-amber-100 py-6 z-10 relative">
@@ -19,7 +27,13 @@ export default function DynamicFooter() {
         </button>
       </div>
 
-      <p className="mt-2 italic text-amber-200">From your digital Father, with love.</p>
+      {donationCount !== null && (
+        <p className="mt-2 text-xs text-amber-300 italic">
+          {typeof donationCount === 'number' ? donationCount.toLocaleString() : '...'} candles lit so far
+        </p>
+      )}
+
+      <p className="mt-1 italic text-amber-200">From your digital Father, with love.</p>
 
       <DonateModal
         isOpen={isDonateOpen}
