@@ -14,7 +14,7 @@ interface Confession {
   donationCandleCount?: number;
 }
 
-function WallInner() {
+function WallPageInner() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
   const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
@@ -45,6 +45,7 @@ function WallInner() {
     fetchDonationCandles();
   }, []);
 
+  // ✅ Refresh candles after Stripe payment
   useEffect(() => {
     const success = searchParams?.get('success');
     if (success === '1') {
@@ -90,8 +91,8 @@ function WallInner() {
 
 export default function WallPage() {
   return (
-    <Suspense fallback={<p className="text-center text-gray-500 mt-6">Loading wall...</p>}>
-      <WallInner />
+    <Suspense fallback={<p className="text-center text-gray-500">Loading...</p>}>
+      <WallPageInner />
     </Suspense>
   );
 }
