@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ConfessionCard from '@/components/ConfessionCard';
 import DonateModal from '@/components/DonateModal';
@@ -14,7 +14,7 @@ interface Confession {
   donationCandleCount?: number;
 }
 
-export default function WallPage() {
+function WallInner() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
   const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
@@ -45,7 +45,6 @@ export default function WallPage() {
     fetchDonationCandles();
   }, []);
 
-  // Refresh candles if Stripe success
   useEffect(() => {
     const success = searchParams?.get('success');
     if (success === '1') {
@@ -86,5 +85,13 @@ export default function WallPage() {
         onClose={() => setDonateOpen(false)}
       />
     </div>
+  );
+}
+
+export default function WallPage() {
+  return (
+    <Suspense fallback={<p className="text-center text-gray-500 mt-6">Loading wall...</p>}>
+      <WallInner />
+    </Suspense>
   );
 }
