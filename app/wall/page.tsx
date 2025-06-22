@@ -45,7 +45,6 @@ function WallPageInner() {
     fetchDonationCandles();
   }, []);
 
-  // ✅ Refresh candles after Stripe payment
   useEffect(() => {
     const success = searchParams?.get('success');
     if (success === '1') {
@@ -74,6 +73,7 @@ function WallPageInner() {
           <ConfessionCard
             key={confession._id}
             confession={confession}
+            availableDonationCandles={availableDonationCandles}  // pass down
             onDonateClick={() => setDonateOpen(true)}
           />
         ))
