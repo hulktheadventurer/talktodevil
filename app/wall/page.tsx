@@ -14,11 +14,12 @@ interface Confession {
   donationCandleCount?: number;
 }
 
-function WallPageInner() {
+export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
   const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
   const searchParams = useSearchParams();
+  const success = searchParams?.get('success');
 
   const fetchConfessions = async () => {
     try {
@@ -45,12 +46,12 @@ function WallPageInner() {
     fetchDonationCandles();
   }, []);
 
+  // Refresh candles if Stripe success
   useEffect(() => {
-    const success = searchParams?.get('success');
     if (success === '1') {
       fetchDonationCandles();
     }
-  }, [searchParams]);
+  }, [success]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-12">
@@ -73,8 +74,8 @@ function WallPageInner() {
           <ConfessionCard
             key={confession._id}
             confession={confession}
-            availableDonationCandles={availableDonationCandles}  // pass down
             onDonateClick={() => setDonateOpen(true)}
+            availableDonationCandles={availableDonationCandles}  {/* ✅ Pass this */}
           />
         ))
       ) : (
@@ -86,13 +87,5 @@ function WallPageInner() {
         onClose={() => setDonateOpen(false)}
       />
     </div>
-  );
-}
-
-export default function WallPage() {
-  return (
-    <Suspense fallback={<p className="text-center text-gray-500">Loading...</p>}>
-      <WallPageInner />
-    </Suspense>
   );
 }
