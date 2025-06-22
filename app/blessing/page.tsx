@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import CandleButton from '@/components/CandleButton';
 import ShareButton from '@/components/ShareButton';
 import DonateModal from '@/components/DonateModal';
 import toast from 'react-hot-toast';
 
-function BlessingPageContent() {
+export default function BlessingPage() {
   const [blessing, setBlessing] = useState('');
   const [createdAt, setCreatedAt] = useState('');
   const [loading, setLoading] = useState(true);
@@ -15,9 +14,6 @@ function BlessingPageContent() {
   const [blessingCandleCount, setBlessingCandleCount] = useState(0);
   const [blessingDonationCount, setBlessingDonationCount] = useState(0);
   const [isDonateOpen, setDonateOpen] = useState(false);
-
-  const searchParams = useSearchParams();
-  const success = searchParams?.get('success');
 
   const fetchAvailableCandles = async () => {
     try {
@@ -52,13 +48,12 @@ function BlessingPageContent() {
     }
 
     load();
-  }, []);
 
-  useEffect(() => {
-    if (success === '1') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === '1' && params.get('candles')) {
       fetchAvailableCandles();
     }
-  }, [success]);
+  }, []);
 
   const handleApply = async () => {
     try {
@@ -150,13 +145,5 @@ function BlessingPageContent() {
         allowCustom
       />
     </main>
-  );
-}
-
-export default function BlessingPage() {
-  return (
-    <Suspense fallback={<p className="text-center text-gray-500">Loading...</p>}>
-      <BlessingPageContent />
-    </Suspense>
   );
 }
