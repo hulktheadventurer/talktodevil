@@ -19,7 +19,6 @@ export default function WallPage() {
   const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
   const searchParams = useSearchParams();
-  const success = searchParams.get('success');
 
   const fetchConfessions = async () => {
     try {
@@ -46,12 +45,13 @@ export default function WallPage() {
     fetchDonationCandles();
   }, []);
 
-  // Correct fix — success param triggers re-fetch
+  // Refresh candles if Stripe success
   useEffect(() => {
+    const success = searchParams?.get('success');
     if (success === '1') {
       fetchDonationCandles();
     }
-  }, [success]);
+  }, [searchParams]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-12">
