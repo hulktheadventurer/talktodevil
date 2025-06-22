@@ -1,19 +1,44 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
-export default function ConfessionCard({ confession, onDonateClick }: any) {
+function ConfessionCardInner({ confession, onDonateClick }: any) {
   const [lighted, setLighted] = useState(false);
   const [applying, setApplying] = useState(false);
   const [candleCount, setCandleCount] = useState(confession.candleCount || 0);
   const [donationCount, setDonationCount] = useState(confession.donationCandleCount || 0);
+  const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
+
+  const searchParams = useSearchParams();
+  const success = searchParams?.get('success');
 
   // ✅ Load lighted state from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`candle-lit-${confession._id}`);
     if (saved === 'true') setLighted(true);
   }, [confession._id]);
+
+  const fetchAvailableCandles = async () => {
+    try {
+      const res = await fetch('/api/user-candles');
+      const data = await res.json();
+      setAvailableDonationCandles(data.donationCandles || 0);
+    } catch (err) {
+      console.error('Failed to fetch donation candles');
+    }
+  };
+
+  useEffect(() => {
+    fetchAvailableCandles();
+  }, []);
+
+  useEffect(() => {
+    if (success === '1') {
+      fetchAvailableCandles();
+    }
+  }, [success]);
 
   const handleLight = async () => {
     if (lighted) return;
@@ -25,8 +50,8 @@ export default function ConfessionCard({ confession, onDonateClick }: any) {
       });
       if (res.ok) {
         setLighted(true);
-setCandleCount((prev: number) => prev + 1);
-        localStorage.setItem(`candle-lit-${confession._id}`, 'true'); // ✅ Save state
+        setCandleCount((prev: number) => prev + 1);
+        localStorage.setItem(`candle-lit-${confession._id}`, 'true');
         toast.success('🕯️ Candle lit');
       } else {
         toast.error('Failed to light candle');
@@ -40,9 +65,6 @@ setCandleCount((prev: number) => prev + 1);
     if (applying) return;
     setApplying(true);
     try {
-      const candleRes = await fetch('/api/user-candles');
-      const { availableDonationCandles } = await candleRes.json();
-
       if (availableDonationCandles < 1) {
         onDonateClick(); // Trigger Stripe modal
         return;
@@ -54,7 +76,7 @@ setCandleCount((prev: number) => prev + 1);
         body: JSON.stringify({ confessionId: confession._id }),
       });
       if (res.ok) {
-setDonationCount((prev: number) => prev + 1);
+        setDonationCount((prev: number) => prev + 1);
         toast.success('✨ Donation candle applied');
       } else {
         const err = await res.json();
@@ -124,5 +146,13 @@ setDonationCount((prev: number) => prev + 1);
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ConfessionCard(props: any) {
+  return (
+    <Suspense fallback={null}>
+      <ConfessionCardInner {...props} />
+    </Suspense>
   );
 }
