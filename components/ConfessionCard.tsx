@@ -1,44 +1,19 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
-function ConfessionCardInner({ confession, onDonateClick }: any) {
+function ConfessionCardInner({ confession, onDonateClick, availableDonationCandles = 0 }: any) {
   const [lighted, setLighted] = useState(false);
   const [applying, setApplying] = useState(false);
   const [candleCount, setCandleCount] = useState(confession.candleCount || 0);
   const [donationCount, setDonationCount] = useState(confession.donationCandleCount || 0);
-  const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
-
-  const searchParams = useSearchParams();
-  const success = searchParams?.get('success');
 
   // ✅ Load lighted state from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`candle-lit-${confession._id}`);
     if (saved === 'true') setLighted(true);
   }, [confession._id]);
-
-  const fetchAvailableCandles = async () => {
-    try {
-      const res = await fetch('/api/user-candles');
-      const data = await res.json();
-      setAvailableDonationCandles(data.donationCandles || 0);
-    } catch (err) {
-      console.error('Failed to fetch donation candles');
-    }
-  };
-
-  useEffect(() => {
-    fetchAvailableCandles();
-  }, []);
-
-  useEffect(() => {
-    if (success === '1') {
-      fetchAvailableCandles();
-    }
-  }, [success]);
 
   const handleLight = async () => {
     if (lighted) return;
