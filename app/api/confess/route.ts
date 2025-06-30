@@ -16,12 +16,14 @@ export async function POST(req: NextRequest) {
     const reply = await generateReply(confession);
 
     const saved = await Confession.create({
-      message: confession,
-      reply,
       public: isPublic !== false,
+      thread: [
+        { role: 'user', message: confession },
+        { role: 'father', message: reply },
+      ],
     });
 
-    return NextResponse.json({ reply, id: saved._id });
+    return NextResponse.json({ reply, id: saved._id, thread: saved.thread });
   } catch (err) {
     console.error('Confession error:', err);
     return NextResponse.json({ error: 'Failed to process confession' }, { status: 500 });
