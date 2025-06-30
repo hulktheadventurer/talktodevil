@@ -13,14 +13,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing confession text' }, { status: 400 });
     }
 
-    const reply = await generateReply(confession);
+    const initialThread = [
+      { role: 'user', message: confession },
+    ];
+
+    const reply = await generateReply(initialThread);
+
+    initialThread.push({ role: 'father', message: reply });
 
     const saved = await Confession.create({
       public: isPublic !== false,
-      thread: [
-        { role: 'user', message: confession },
-        { role: 'father', message: reply },
-      ],
+      thread: initialThread,
     });
 
     return NextResponse.json({ reply, id: saved._id, thread: saved.thread });
