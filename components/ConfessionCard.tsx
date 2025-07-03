@@ -8,8 +8,10 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
   const [applying, setApplying] = useState(false);
   const [candleCount, setCandleCount] = useState(confession.candleCount || 0);
   const [donationCount, setDonationCount] = useState(confession.donationCandleCount || 0);
+  const [input, setInput] = useState('');
+  const [thread, setThread] = useState(confession.thread || []);
+  const [loadingReply, setLoadingReply] = useState(false);
 
-  // ✅ Load lighted state from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`candle-lit-${confession._id}`);
     if (saved === 'true') setLighted(true);
@@ -41,10 +43,9 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
     setApplying(true);
     try {
       if (availableDonationCandles < 1) {
-        onDonateClick(); // Trigger Stripe modal
+        onDonateClick();
         return;
       }
-
       const res = await fetch('/api/candle/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,31 +71,75 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
     toast.success('Link copied ↪');
   };
 
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    const newThread = [...thread, { role: 'user', message: input, timestamp: new Date() }];
+    setThread(newThread);
+    setInput('');
+    setLoadingReply(true);
+    try {
+      const res = await fetch(`/api/confess/${confession._id}/reply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setThread([...newThread, { role: 'father', message: data.reply, timestamp: new Date() }]);
+      } else {
+        toast.error(data.error || 'Failed to reply');
+      }
+    } catch (err) {
+      toast.error('Failed to send message');
+    } finally {
+      setLoadingReply(false);
+    }
+  };
+
   return (
     <div className="bg-white shadow rounded-xl p-4 mb-4 border border-amber-100">
-      <p className="text-gray-800 text-lg whitespace-pre-wrap font-semibold mb-2">
-        {confession.message}
-      </p>
-      {confession.reply && (
-        <div className="mt-2 p-3 bg-amber-50 rounded text-sm border-l-4 border-amber-400">
-          <strong className="text-amber-700">Priest:</strong> {confession.reply}
+      <div className="space-y-3">
+        {thread.map((t, idx) => (
+          <div
+            key={idx}
+            className={`text-sm whitespace-pre-wrap ${t.role === 'father' ? 'text-amber-700 bg-amber-50 border-l-4 border-amber-400 px-3 py-2 rounded' : 'text-gray-800 font-semibold'}`}
+          >
+            {t.role === 'father' ? <strong>Priest:</strong> : null} {t.message}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Speak again..."
+            className="flex-1 px-3 py-2 border rounded"
+          />
+          <button
+            onClick={handleSend}
+            disabled={loadingReply}
+            className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded"
+          >
+            Send
+          </button>
         </div>
-      )}
+      </div>
 
       <div className="flex justify-between items-end text-sm text-gray-500 mt-4">
         <div className="flex flex-col gap-1">
           <div>🕯️ {candleCount} &nbsp; ✨ {donationCount}</div>
         </div>
-
         <div className="flex flex-col items-end gap-1 text-xs text-gray-400">
           <div>{new Date(confession.createdAt).toLocaleString()}</div>
           <div className="flex gap-2 text-sm">
             <button
               onClick={handleLight}
               disabled={lighted}
-              className={`bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-xl ${
-                lighted ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-xl ${lighted ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               Light 🕯️
             </button>

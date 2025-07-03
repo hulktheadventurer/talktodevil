@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   const sessionId = 'guest';
   const candleCount = 1;
 
-  const siteState = await SiteState.findOne();
+const siteState = await SiteState.findOne({});
 
   // ✅ Use availableDonationCandles here
   if (!siteState || siteState.availableDonationCandles < 1) {

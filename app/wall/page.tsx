@@ -7,8 +7,7 @@ import DonateModal from '@/components/DonateModal';
 
 interface Confession {
   _id: string;
-  message: string;
-  reply?: string;
+  thread: { role: string; message: string; timestamp?: string }[];
   createdAt: string;
   candleCount?: number;
   donationCandleCount?: number;
@@ -25,7 +24,15 @@ export default function WallPage() {
     try {
       const res = await fetch('/api/confess/list');
       const data = await res.json();
-      setConfessions(data);
+      setConfessions(
+        data.map((conf: any) => ({
+          ...conf,
+          thread: conf.thread || [
+            { role: 'user', message: conf.message },
+            { role: 'father', message: conf.reply }
+          ],
+        }))
+      );
     } catch (err) {
       console.error('Failed to fetch confessions');
     }
@@ -46,7 +53,6 @@ export default function WallPage() {
     fetchDonationCandles();
   }, []);
 
-  // Refresh candles if Stripe success
   useEffect(() => {
     if (success === '1') {
       fetchDonationCandles();
@@ -64,7 +70,7 @@ export default function WallPage() {
         </button>
         {availableDonationCandles > 0 && (
           <p className="text-sm text-amber-700 mt-2">
-            You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
+            👉 You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
           </p>
         )}
       </div>
@@ -75,17 +81,14 @@ export default function WallPage() {
             key={confession._id}
             confession={confession}
             onDonateClick={() => setDonateOpen(true)}
-            availableDonationCandles={availableDonationCandles}  {/* ✅ Pass this */}
+            availableDonationCandles={availableDonationCandles}
           />
         ))
       ) : (
         <p className="text-center text-gray-500 mt-6">No confessions found.</p>
       )}
 
-      <DonateModal
-        isOpen={donateOpen}
-        onClose={() => setDonateOpen(false)}
-      />
+      <DonateModal isOpen={donateOpen} onClose={() => setDonateOpen(false)} />
     </div>
   );
 }

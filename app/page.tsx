@@ -1,53 +1,69 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import DonateModal from '@/components/DonateModal';
 
 export default function HomePage() {
-  const [confession, setConfession] = useState('');
-  const [postToWall, setPostToWall] = useState(true);
-const [response, setResponse] = useState<{ reply: string; timestamp: string } | null>(null);
+  const [input, setInput] = useState('');
+  const [thread, setThread] = useState<
+    { role: string; message: string; timestamp: string }[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [showDonateModal, setShowDonateModal] = useState(false);
-const responseEndRef = useRef<HTMLDivElement | null>(null);
+  const [posted, setPosted] = useState(false);
+  const responseEndRef = useRef<HTMLDivElement | null>(null);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit(e);
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    const userMessage = {
+      role: 'user',
+      message: input,
+      timestamp: new Date().toISOString(),
+    };
+    setThread((prev) => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/confess/reply-temp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ thread: [...thread, userMessage] }),
+      });
+      const data = await res.json();
+      const fatherMessage = {
+        role: 'father',
+        message: data.reply,
+        timestamp: new Date().toISOString(),
+      };
+      setThread((prev) => [...prev, fatherMessage]);
+    } catch (err) {
+      console.error('Reply error', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    if (!confession.trim()) return;
-    setLoading(true);
-
-    const res = await fetch("/api/confess", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confession, public: postToWall })
-    });
-
-    const data = await res.json();
-    const aiReply = data.reply;
-
-    const newResponse = {
-      reply: aiReply,
-      timestamp: new Date().toISOString()
-    };
-
-    setResponse(newResponse);
-    setLoading(false);
-    setConfession('');
+  const handlePostToWall = async () => {
+    try {
+      const res = await fetch('/api/confess/final', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ thread }),
+      });
+      if (res.ok) {
+        setPosted(true);
+      }
+    } catch (err) {
+      console.error('Failed to post confession');
+    }
   };
 
   useEffect(() => {
     if (responseEndRef.current) {
       responseEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [response]);
+  }, [thread]);
 
   return (
     <div className="relative px-6 py-12 w-full max-w-3xl mx-auto z-10">
@@ -60,55 +76,58 @@ const responseEndRef = useRef<HTMLDivElement | null>(null);
         </button>
       </div>
 
-      <h2 className="text-3xl font-bold mb-8 text-center text-amber-800 z-10 relative">Speak, My Child</h2>
+      <h2 className="text-3xl font-bold mb-8 text-center text-amber-800 z-10 relative">
+        Speak, My Child
+      </h2>
 
-      {loading && (
-        <div className="flex justify-center py-4 z-10 relative">
-          <div className="italic text-amber-600">The Father is listening...</div>
-        </div>
-      )}
-
-      {response && (
-        <div className="flex flex-col space-y-6 z-10 relative">
-          <div className="bg-white shadow-xl rounded-2xl p-6 border border-amber-200 max-h-[60vh] overflow-y-auto">
-            <div className="p-5 bg-amber-50 rounded-xl border border-amber-200 shadow-inner text-gray-800 whitespace-pre-wrap leading-relaxed">
-              {response.reply}
-            </div>
-            <div className="mt-3 text-sm text-gray-500 text-right">
-              {new Date(response.timestamp).toLocaleString()}
-            </div>
+      <div className="bg-white shadow-xl rounded-2xl p-6 border border-amber-200 max-h-[60vh] overflow-y-auto space-y-4">
+        {thread.map((entry, idx) => (
+          <div
+            key={idx}
+            className={`whitespace-pre-wrap leading-relaxed text-sm ${
+              entry.role === 'father'
+                ? 'bg-amber-50 text-amber-700 border-l-4 border-amber-400 px-3 py-2 rounded'
+                : 'text-gray-800 font-semibold'
+            }`}
+          >
+            {entry.role === 'father' ? <strong>Priest:</strong> : null} {entry.message}
           </div>
-          <div ref={responseEndRef} />
-        </div>
-      )}
+        ))}
+        {loading && (
+          <div className="italic text-amber-600">The Father is listening...</div>
+        )}
+        <div ref={responseEndRef} />
+      </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 mt-8 z-10 relative">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSend();
+        }}
+        className="flex flex-col space-y-4 mt-6 z-10 relative"
+      >
         <textarea
-          value={confession}
-          onChange={(e) => setConfession(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Confess here..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Speak again..."
           className="w-full p-4 border-2 border-amber-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50"
-          rows={4}
+          rows={3}
         />
-        <div className="text-sm italic text-amber-600 text-center">
-          You may speak again whenever your heart stirs — the Father will listen anew.
-        </div>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <label className="flex items-center space-x-3 text-base">
-            <input
-              type="checkbox"
-              checked={postToWall}
-              onChange={(e) => setPostToWall(e.target.checked)}
-              className="accent-amber-600"
-            />
-            <span>Post to Wall</span>
-          </label>
           <button
             type="submit"
+            disabled={loading}
             className="bg-amber-600 text-white px-8 py-2 rounded-2xl hover:bg-amber-700 font-semibold shadow"
           >
-            Confess
+            Send
+          </button>
+          <button
+            type="button"
+            disabled={posted || thread.length === 0}
+            onClick={handlePostToWall}
+            className="bg-purple-600 text-white px-8 py-2 rounded-2xl hover:bg-purple-700 font-semibold shadow"
+          >
+            {posted ? '✅ Posted' : 'Post to Wall'}
           </button>
         </div>
       </form>
