@@ -99,7 +99,7 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
   return (
     <div className="bg-white shadow rounded-xl p-4 mb-4 border border-amber-100">
       <div className="space-y-3">
-thread.map((t: { role: string; message: string }, idx) => (
+{thread.map((t: { role: string; message: string }, idx) => (
           <div
             key={idx}
             className={`text-sm whitespace-pre-wrap ${t.role === 'father' ? 'text-amber-700 bg-amber-50 border-l-4 border-amber-400 px-3 py-2 rounded' : 'text-gray-800 font-semibold'}`}
