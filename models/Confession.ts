@@ -1,34 +1,49 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, model, models } from 'mongoose';
 
-const ThreadMessageSchema = new mongoose.Schema({
-  role: { type: String, enum: ['user', 'father'], required: true },
-  message: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now },
-}, { _id: false });
+const ThreadSchema = new Schema(
+  {
+    message: String,
+    role: { type: String, enum: ['user', 'father'] },
+    timestamp: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
 
-const ConfessionSchema = new mongoose.Schema({
-  message: { type: String, required: true }, // legacy
-  reply: { type: String, default: '' },       // legacy
-  public: { type: Boolean, default: true },
-  createdAt: { type: Date, default: Date.now },
+const ConfessionSchema = new Schema(
+  {
+    message: String,
+    reply: String,
+    createdAt: { type: Date, default: Date.now },
+    public: { type: Boolean, default: true },
+    candleCount: { type: Number, default: 0 },
+    donationCandleCount: { type: Number, default: 0 },
+    thread: [ThreadSchema],
+  },
+  { timestamps: true }
+);
 
-  candleCount: { type: Number, default: 0 },
-  donationCandleCount: { type: Number, default: 0 },
-
-  thread: { type: [ThreadMessageSchema], default: [] },
-});
-
-// ✅ Optional: middleware to initialize `thread` from `message`/`reply` if not present
+// Initialize thread if missing
 ConfessionSchema.pre('save', function (next) {
   if (!this.thread?.length && this.message) {
     this.thread = [
-      { role: 'user', message: this.message, timestamp: this.createdAt || new Date() },
+      {
+        role: 'user',
+        message: this.message,
+        timestamp: this.createdAt || new Date(),
+      } as any,
     ];
+
     if (this.reply) {
-      this.thread.push({ role: 'father', message: this.reply, timestamp: new Date() });
+      this.thread.push({
+        role: 'father',
+        message: this.reply,
+        timestamp: new Date(),
+      } as any);
     }
   }
+
   next();
 });
 
-export default mongoose.models.Confession || mongoose.model('Confession', ConfessionSchema);
+const Confession = models.Confession || model('Confession', ConfessionSchema);
+export default Confession;
