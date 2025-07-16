@@ -36,7 +36,7 @@ function ConfessionCardInner({
       });
       if (res.ok) {
         setLighted(true);
-        setCandleCount((prev) => prev + 1);
+setCandleCount((prev: number) => prev + 1);
         localStorage.setItem(`candle-lit-${confession._id}`, 'true');
         toast.success('🕯️ Candle lit');
       } else {
