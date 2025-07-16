@@ -49,52 +49,60 @@ export default function HomePage() {
       const res = await fetch('/api/confess/final', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ thread }),
+        body: JSON.stringify({ thread, public: true }),
       });
+
+      const data = await res.json();
+
       if (res.ok) {
+        console.log('Confession posted:', data);
+        alert('✅ Confession posted to wall!');
         setPosted(true);
+      } else {
+        console.error('Post to wall failed:', data);
+        alert('❌ Failed to post: ' + (data.error || 'Unknown error'));
       }
     } catch (err) {
-      console.error('Failed to post confession');
+      console.error('Post to wall crashed:', err);
+      alert('❌ Network or server error');
     }
   };
 
   useEffect(() => {
-    if (responseEndRef.current) {
-      responseEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    responseEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [thread]);
 
   return (
-    <div className="relative px-6 py-12 w-full max-w-3xl mx-auto z-10">
-      <div className="text-center mb-6">
-        <button
-          onClick={() => setShowDonateModal(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-6 py-2 rounded-xl"
-        >
-          Light a Donation Candle
-        </button>
-      </div>
-
-      <h2 className="text-3xl font-bold mb-8 text-center text-amber-800 z-10 relative">
+    <div className="relative px-6 py-8 w-full max-w-3xl mx-auto z-10">
+      <h2 className="text-3xl font-bold mb-6 text-center text-amber-800 z-10 relative">
         Speak, My Child
       </h2>
 
-      <div className="bg-white shadow-xl rounded-2xl p-6 border border-amber-200 max-h-[60vh] overflow-y-auto space-y-4">
+      <div
+        className={`bg-white shadow-xl rounded-2xl p-6 border border-amber-200 max-h-[60vh] overflow-y-auto flex flex-col ${
+          thread.length === 0 ? 'justify-center min-h-[120px]' : 'space-y-3'
+        }`}
+      >
+        {thread.length === 0 && !loading && (
+          <p className="text-center text-amber-300 italic">
+            Start a conversation with the Father...
+          </p>
+        )}
+
         {thread.map((entry, idx) => (
           <div
             key={idx}
-            className={`whitespace-pre-wrap leading-relaxed text-sm ${
+            className={`max-w-[80%] px-4 py-2 rounded-xl text-sm whitespace-pre-wrap ${
               entry.role === 'father'
-                ? 'bg-amber-50 text-amber-700 border-l-4 border-amber-400 px-3 py-2 rounded'
-                : 'text-gray-800 font-semibold'
+                ? 'bg-amber-100 text-amber-800 self-start'
+                : 'bg-amber-600 text-white self-end'
             }`}
           >
-            {entry.role === 'father' ? <strong>Priest:</strong> : null} {entry.message}
+            <strong>{entry.role === 'father' ? 'Priest:' : 'You:'}</strong> {entry.message}
           </div>
         ))}
         {loading && (
-          <div className="italic text-amber-600">The Father is listening...</div>
+          <div className="italic text-amber-600 self-start">The Father is listening...</div>
         )}
         <div ref={responseEndRef} />
       </div>
@@ -104,7 +112,7 @@ export default function HomePage() {
           e.preventDefault();
           handleSend();
         }}
-        className="flex flex-col space-y-4 mt-6 z-10 relative"
+        className="flex flex-col space-y-4 mt-4 z-10 relative"
       >
         <textarea
           value={input}
@@ -112,7 +120,14 @@ export default function HomePage() {
           placeholder="Speak again..."
           className="w-full p-4 border-2 border-amber-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50"
           rows={3}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
         />
+
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <button
             type="submit"
@@ -127,7 +142,7 @@ export default function HomePage() {
             onClick={handlePostToWall}
             className="bg-purple-600 text-white px-8 py-2 rounded-2xl hover:bg-purple-700 font-semibold shadow"
           >
-            {posted ? '✅ Posted' : 'Post to Wall'}
+            {posted ? '✅ Posted' : 'End the chat and post to Wall'}
           </button>
         </div>
       </form>

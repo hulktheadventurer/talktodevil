@@ -1,21 +1,30 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { toast } from 'react-hot-toast';
 
-function ConfessionCardInner({ confession, onDonateClick, availableDonationCandles = 0 }: any) {
+function ConfessionCardInner({
+  confession,
+  onDonateClick,
+  isWallView = false,
+}: any) {
   const [lighted, setLighted] = useState(false);
-  const [applying, setApplying] = useState(false);
   const [candleCount, setCandleCount] = useState(confession.candleCount || 0);
-  const [donationCount, setDonationCount] = useState(confession.donationCandleCount || 0);
   const [input, setInput] = useState('');
   const [thread, setThread] = useState(confession.thread || []);
   const [loadingReply, setLoadingReply] = useState(false);
+  const responseEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(`candle-lit-${confession._id}`);
     if (saved === 'true') setLighted(true);
   }, [confession._id]);
+
+  useEffect(() => {
+    if (!isWallView) {
+      responseEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [thread, isWallView]);
 
   const handleLight = async () => {
     if (lighted) return;
@@ -27,41 +36,14 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
       });
       if (res.ok) {
         setLighted(true);
-        setCandleCount((prev: number) => prev + 1);
+        setCandleCount((prev) => prev + 1);
         localStorage.setItem(`candle-lit-${confession._id}`, 'true');
         toast.success('🕯️ Candle lit');
       } else {
         toast.error('Failed to light candle');
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to light candle');
-    }
-  };
-
-  const handleApply = async () => {
-    if (applying) return;
-    setApplying(true);
-    try {
-      if (availableDonationCandles < 1) {
-        onDonateClick();
-        return;
-      }
-      const res = await fetch('/api/candle/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ confessionId: confession._id }),
-      });
-      if (res.ok) {
-        setDonationCount((prev: number) => prev + 1);
-        toast.success('✨ Donation candle applied');
-      } else {
-        const err = await res.json();
-        toast.error(err.error || 'Failed to apply candle');
-      }
-    } catch (err) {
-      toast.error('Failed to apply candle');
-    } finally {
-      setApplying(false);
     }
   };
 
@@ -76,6 +58,9 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
     const newThread = [...thread, { role: 'user', message: input, timestamp: new Date() }];
     setThread(newThread);
     setInput('');
+
+    if (isWallView) return;
+
     setLoadingReply(true);
     try {
       const res = await fetch(`/api/confess/${confession._id}/reply`, {
@@ -89,7 +74,7 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
       } else {
         toast.error(data.error || 'Failed to reply');
       }
-    } catch (err) {
+    } catch {
       toast.error('Failed to send message');
     } finally {
       setLoadingReply(false);
@@ -98,40 +83,52 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
 
   return (
     <div className="bg-white shadow rounded-xl p-4 mb-4 border border-amber-100">
-      <div className="space-y-3">
-{thread.map((t: { role: string; message: string }, idx: number) => (
+      <div className="flex flex-col gap-2">
+        {thread.map((t: { role: string; message: string }, idx: number) => (
           <div
             key={idx}
-            className={`text-sm whitespace-pre-wrap ${t.role === 'father' ? 'text-amber-700 bg-amber-50 border-l-4 border-amber-400 px-3 py-2 rounded' : 'text-gray-800 font-semibold'}`}
+            className={`max-w-[80%] px-4 py-2 rounded-xl text-sm whitespace-pre-wrap ${
+              t.role === 'father'
+                ? 'bg-amber-100 text-amber-800 self-start'
+                : 'bg-amber-600 text-white self-end'
+            }`}
           >
-            {t.role === 'father' ? <strong>Priest:</strong> : null} {t.message}
+            <strong>{t.role === 'father' ? 'Priest:' : 'You:'}</strong> {t.message}
           </div>
         ))}
+        <div ref={responseEndRef} />
+        {!isWallView && loadingReply && (
+          <div className="italic text-amber-600 self-start">The Father is listening...</div>
+        )}
       </div>
 
-      <div className="mt-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Speak again..."
-            className="flex-1 px-3 py-2 border rounded"
-          />
-          <button
-            onClick={handleSend}
-            disabled={loadingReply}
-            className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded"
-          >
-            Send
-          </button>
+      {/* Input box (only on home page) */}
+      {!isWallView && (
+        <div className="mt-4">
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Speak again..."
+              className="flex-1 px-3 py-2 border rounded"
+            />
+            <button
+              onClick={handleSend}
+              disabled={!input.trim()}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Send
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
+      {/* Stats + Actions */}
       <div className="flex justify-between items-end text-sm text-gray-500 mt-4">
         <div className="flex flex-col gap-1">
-          <div>🕯️ {candleCount} &nbsp; ✨ {donationCount}</div>
+          <div>🕯️ {candleCount}</div>
         </div>
         <div className="flex flex-col items-end gap-1 text-xs text-gray-400">
           <div>{new Date(confession.createdAt).toLocaleString()}</div>
@@ -139,16 +136,11 @@ function ConfessionCardInner({ confession, onDonateClick, availableDonationCandl
             <button
               onClick={handleLight}
               disabled={lighted}
-              className={`bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-xl ${lighted ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-xl ${
+                lighted ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               Light 🕯️
-            </button>
-            <button
-              onClick={handleApply}
-              disabled={applying}
-              className="bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded-xl"
-            >
-              Apply ✨
             </button>
             <button
               onClick={handleShare}

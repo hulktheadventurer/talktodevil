@@ -27,7 +27,6 @@ export default function ArchivePage() {
         const blessingsRes = await fetch('/api/blessing/all');
         const blessingsData = await blessingsRes.json();
         setBlessings(blessingsData.blessings || []);
-
         await fetchAvailableCandles();
       } catch (err) {
         console.error('Error loading archive data:', err);
@@ -49,13 +48,13 @@ export default function ArchivePage() {
         <h1 className="text-4xl font-bold text-amber-800 mb-2">📜 Archive of Blessings</h1>
         <button
           onClick={() => { setSelectedBlessingId(''); setDonateOpen(true); }}
-          className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700"
+          className="px-5 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 font-semibold"
         >
-          Light a Donation Candle
+          Donate Candles
         </button>
         {availableDonationCandles > 0 && (
           <p className="mt-2 text-sm text-amber-700">
-            You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
+            👉 You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
           </p>
         )}
       </section>
@@ -64,16 +63,29 @@ export default function ArchivePage() {
         <h2 className="text-3xl font-bold text-center text-amber-700 mb-6">Past Blessings</h2>
         <ul className="space-y-6">
           {blessings.map((b: any, i: number) => (
-            <li key={b._id || i} className="bg-white p-4 rounded-lg shadow border border-amber-200 space-y-2">
+            <li
+              key={b._id || i}
+              id={`blessing-${i}`}
+              className="bg-white p-4 rounded-lg shadow border border-amber-200 space-y-2"
+            >
               <p className="italic text-gray-800 text-lg text-center">“{b.text}”</p>
-              <p className="text-sm text-gray-500 text-right">Posted on {new Date(b.date).toLocaleDateString()}</p>
-              <div className="flex justify-end gap-4 text-amber-700 text-sm">
+              <p className="text-sm text-gray-500 text-right">
+                Posted on {new Date(b.date).toLocaleDateString()}
+              </p>
+              <div className="flex justify-end gap-2 flex-wrap">
                 <ShareButton
-                  label="Share"
-                  icon={<span className="ml-1">↪</span>}
+                  label="Share ↪"
+                  icon={null}
                   link={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://confessly.life'}/archive#blessing-${i}`}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded"
                 />
-                <button onClick={() => { setSelectedBlessingId(b._id?.toString() || ''); setDonateOpen(true); }} className="hover:underline">
+                <button
+                  onClick={() => {
+                    setSelectedBlessingId(b._id?.toString() || '');
+                    setDonateOpen(true);
+                  }}
+                  className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 text-sm rounded"
+                >
                   Donate ❤️
                 </button>
               </div>

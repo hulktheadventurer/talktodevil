@@ -11,14 +11,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing or invalid thread' }, { status: 400 });
     }
 
+    const messageEntry = thread.find((msg: any) => msg.role === 'user');
+    const replyEntry = thread.find((msg: any) => msg.role === 'father');
+
+    if (!messageEntry || !replyEntry) {
+      return NextResponse.json({ error: 'Missing message or reply' }, { status: 400 });
+    }
+
     const saved = await Confession.create({
-      public: isPublic !== false,
+      public: isPublic === true, // ✅ explicitly true
       thread,
+      message: messageEntry.message,
+      reply: replyEntry.message,
     });
 
     return NextResponse.json({ success: true, id: saved._id });
-  } catch (err) {
-    console.error('Final save error:', err);
+  } catch (err: any) {
+    console.error('Final save error:', err.message || err);
     return NextResponse.json({ error: 'Failed to save confession' }, { status: 500 });
   }
 }

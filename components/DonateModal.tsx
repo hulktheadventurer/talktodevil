@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 const candleTiers = [
-  { label: "Free Candle", count: 1, price: 0 },
   { label: "Single Candle", count: 1, price: 0.99 },
   { label: "Small Bundle (3)", count: 3, price: 2.49 },
   { label: "Medium Bundle (5)", count: 5, price: 3.99 },
   { label: "Large Bundle (10)", count: 10, price: 6.99 },
-  { label: "Custom", count: 0, price: 0 }
+  { label: "Custom", count: 0, price: 0 },
 ];
 
 export default function DonateModal({
@@ -37,12 +36,6 @@ export default function DonateModal({
 
     if (!candles || candles <= 0) {
       toast.error('Invalid candle amount');
-      return;
-    }
-
-    if (amount === 0) {
-      toast.success('🕯️ You lit a free candle');
-      onClose();
       return;
     }
 
@@ -81,28 +74,28 @@ export default function DonateModal({
           ✖
         </button>
         <h2 className="text-center text-lg font-semibold text-amber-700 mb-4">
-          Light a Candle
+          Donation
         </h2>
 
         <div className="space-y-2">
-          {candleTiers.map((tier) => (
-            <button
-              key={tier.label}
-              className={`block w-full text-left px-4 py-2 rounded font-medium ${
-                selectedTier.label === tier.label
-                  ? "bg-amber-700 text-white"
-                  : "bg-amber-600 text-white hover:bg-amber-700"
-              }`}
-              onClick={() => setSelectedTier(tier)}
-            >
-              {tier.label}{" "}
-              {tier.label === "Custom"
-                ? "- Set your amount"
-                : tier.price === 0
-                ? "- Free"
-                : `- £${tier.price}`}
-            </button>
-          ))}
+          {candleTiers.map((tier) =>
+            tier.label === 'Custom' && !allowCustom ? null : (
+              <button
+                key={tier.label}
+                className={`block w-full text-left px-4 py-2 rounded font-medium ${
+                  selectedTier.label === tier.label
+                    ? "bg-amber-700 text-white"
+                    : "bg-amber-600 text-white hover:bg-amber-700"
+                }`}
+                onClick={() => setSelectedTier(tier)}
+              >
+                {tier.label}{" "}
+                {tier.label === "Custom"
+                  ? "- Set your amount"
+                  : `- £${tier.price}`}
+              </button>
+            )
+          )}
 
           {selectedTier.label === "Custom" && (
             <input

@@ -2,7 +2,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import Link from 'next/link';
 import DynamicFooter from '@/components/DynamicFooter';
-import Head from 'next/head'; // 👈 add this!
+import Head from 'next/head'; // ✅ keep this
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta property="og:image" content="https://www.confessly.life/og-image.png" />
         <meta property="og:url" content="https://www.confessly.life/" />
         <meta property="og:type" content="website" />
+        <link rel="icon" type="image/png" href="/favicon.png" /> {/* ✅ this is the favicon */}
       </Head>
       <body className="bg-gradient-to-b from-orange-50 to-amber-100 text-gray-900 text-base flex flex-col min-h-screen">
         {/* Watermark */}

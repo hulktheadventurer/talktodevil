@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ConfessionCard from '@/components/ConfessionCard';
 import DonateModal from '@/components/DonateModal';
@@ -17,6 +17,7 @@ export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
   const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const searchParams = useSearchParams();
   const success = searchParams?.get('success');
 
@@ -24,17 +25,21 @@ export default function WallPage() {
     try {
       const res = await fetch('/api/confess/list');
       const data = await res.json();
-      setConfessions(
-        data.map((conf: any) => ({
-          ...conf,
-          thread: conf.thread || [
-            { role: 'user', message: conf.message },
-            { role: 'father', message: conf.reply }
-          ],
-        }))
-      );
+
+      if (Array.isArray(data.confessions)) {
+        setConfessions(
+          data.confessions.map((conf: any) => ({
+            ...conf,
+            thread: conf.thread || [
+              { role: 'user', message: conf.message },
+              ...(conf.reply ? [{ role: 'father', message: conf.reply }] : []),
+            ],
+          }))
+        );
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 100);
+      }
     } catch (err) {
-      console.error('Failed to fetch confessions');
+      console.error('Failed to fetch confessions', err);
     }
   };
 
@@ -59,20 +64,28 @@ export default function WallPage() {
     }
   }, [success]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <div className="max-w-2xl mx-auto px-4 pt-6 pb-12">
+    <div className="max-w-2xl mx-auto px-4 pt-6 pb-12 relative">
       <div className="text-center mb-4">
-        <button
-          onClick={() => setDonateOpen(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-5 py-2 rounded"
-        >
-          Light a Donation Candle
-        </button>
-        {availableDonationCandles > 0 && (
-          <p className="text-sm text-amber-700 mt-2">
-            👉 You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
-          </p>
-        )}
+<button
+  onClick={() => setDonateOpen(true)}
+  className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-5 py-2 rounded"
+>
+  Donate Candles
+</button>
+
       </div>
 
       {confessions.length > 0 ? (
@@ -81,7 +94,7 @@ export default function WallPage() {
             key={confession._id}
             confession={confession}
             onDonateClick={() => setDonateOpen(true)}
-            availableDonationCandles={availableDonationCandles}
+            isWallView={true}
           />
         ))
       ) : (
@@ -89,6 +102,15 @@ export default function WallPage() {
       )}
 
       <DonateModal isOpen={donateOpen} onClose={() => setDonateOpen(false)} />
+
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full shadow-lg z-50"
+        >
+          ↑ Top
+        </button>
+      )}
     </div>
   );
 }

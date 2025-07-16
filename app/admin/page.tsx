@@ -88,30 +88,50 @@ export default function AdminPage() {
     }
   };
 
-  const exportToCSV = () => {
-    const headers = ['Message', 'Reply', 'Created At', 'Candle Count', 'Donation Candles'];
-    const rows = confessions.map(conf => [
-      conf.message.replace(/\n/g, ' '),
-      conf.reply?.replace(/\n/g, ' ') || '',
+const exportToCSV = () => {
+  const headers = ['Created At', 'Conversation', 'Candle Count', 'Donation Candles'];
+
+  const rows = confessions.map(conf => {
+    let conversation = '';
+
+    if (Array.isArray((conf as any).thread)) {
+      conversation = (conf as any).thread
+        .map(t => `${t.role === 'user' ? 'You' : 'Father'}: ${t.message}`)
+        .join(' | ');
+    } else {
+      conversation = `You: ${conf.message}`;
+      if (conf.reply) conversation += ` | Father: ${conf.reply}`;
+    }
+
+    return [
       conf.createdAt ? new Date(conf.createdAt).toLocaleString() : 'Unknown',
+      conversation,
       String(conf.candleCount ?? 0),
       String(conf.donationCandleCount ?? 0),
-    ]);
-    const summaryRow = [
-      '', '', 'TOTAL',
-      candleCount.toString(),
-      donationCount.toString(),
     ];
-    const csvContent = [headers, ...rows, summaryRow].map(r => r.map(cell => `"${cell}"`).join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'confessions_export.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+  });
+
+  const summaryRow = [
+    'TOTAL',
+    '',
+    candleCount.toString(),
+    donationCount.toString(),
+  ];
+
+  const csvContent = [headers, ...rows, summaryRow]
+    .map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', 'confessions_export.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 
   const sortedConfessions = [...confessions].filter(conf => {
     return conf.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -203,8 +223,26 @@ export default function AdminPage() {
       <div className="space-y-3">
         {visibleConfessions.map((conf) => (
           <div key={conf._id} className="bg-white p-4 rounded shadow">
-            <div className="text-sm text-gray-600 whitespace-pre-wrap">{conf.message}</div>
-            {conf.reply && <div className="mt-2 text-sm text-amber-700">🕊️ {conf.reply}</div>}
+<div className="text-sm text-gray-800 whitespace-pre-wrap space-y-1">
+  {Array.isArray((conf as any).thread)
+    ? (conf as any).thread.map((t, i) => (
+        <div key={i}>
+          <span className="font-semibold">
+            {t.role === 'user' ? 'You:' : 'Father:'}
+          </span>{' '}
+          {t.message}
+        </div>
+      ))
+    : (
+        <>
+          <div><span className="font-semibold">You:</span> {conf.message}</div>
+          {conf.reply && (
+            <div className="mt-1"><span className="font-semibold">Father:</span> {conf.reply}</div>
+          )}
+        </>
+      )}
+</div>
+
             <div className="flex justify-between mt-2 text-xs text-gray-400">
               <span>{conf.createdAt ? new Date(conf.createdAt).toLocaleString() : 'Unknown'}</span>
               <div className="flex items-center gap-2">

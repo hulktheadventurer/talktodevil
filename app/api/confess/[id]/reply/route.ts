@@ -3,7 +3,10 @@ import dbConnect from '@/lib/dbcConnect';
 import Confession from '@/models/Confession';
 import { generateReply } from '@/lib/ai';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     await dbConnect();
     const { message } = await req.json();
@@ -17,20 +20,31 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       return NextResponse.json({ error: 'Confession not found' }, { status: 404 });
     }
 
-    // Add user's new message to the thread
-    confession.thread.push({ role: 'user', message, timestamp: new Date() });
+    // Add user message
+    confession.thread.push({
+      role: 'user',
+      message,
+      timestamp: new Date(),
+    });
 
-    // Generate priest's reply
+    // Generate priest reply
     const reply = await generateReply(confession.thread);
 
-    // Add priest's reply to the thread
-    confession.thread.push({ role: 'father', message: reply, timestamp: new Date() });
+    // Add priest message
+    confession.thread.push({
+      role: 'father',
+      message: reply,
+      timestamp: new Date(),
+    });
 
     await confession.save();
 
     return NextResponse.json({ reply });
   } catch (err) {
     console.error('Thread reply error:', err);
-    return NextResponse.json({ error: 'Failed to reply to confession' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to reply to confession' },
+      { status: 500 }
+    );
   }
 }

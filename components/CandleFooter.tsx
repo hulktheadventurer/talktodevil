@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import DonateModal from './DonateModal'; // ✅ Corrected component name
+import DonateModal from './DonateModal';
 
 export default function CandleFooter() {
   const [count, setCount] = useState<number | null>(null);
-  const [isOpen, setIsOpen] = useState(false); // ✅ Modal control
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/candle/total')
@@ -21,10 +21,10 @@ export default function CandleFooter() {
         <Link href="/terms" className="underline">Terms & Privacy</Link>
         <Link href="/disclaimer" className="underline">Disclaimer</Link>
         <button
-          className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded text-sm"
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm"
           onClick={() => setIsOpen(true)}
         >
-          🕯️ Light a Candle
+          ❤️ Donate Candles
         </button>
         <DonateModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
       </div>

@@ -23,15 +23,14 @@ export default function DynamicFooter() {
           onClick={() => setIsDonateOpen(true)}
           className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded text-sm"
         >
-          🕯️ Light a Candle
+          ❤️ Donate Candles
         </button>
       </div>
 
-      {donationCount !== null && (
-        <p className="mt-2 text-xs text-amber-300 italic">
-          {typeof donationCount === 'number' ? donationCount.toLocaleString() : '...'} candles lit so far
-        </p>
-      )}
+<p className="mt-2 text-xs text-amber-300 italic">
+  Every candle is a silent prayer.
+</p>
+
 
       <p className="mt-1 italic text-amber-200">From your digital Father, with love.</p>
 
