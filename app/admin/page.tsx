@@ -12,6 +12,7 @@ interface Confession {
   public: boolean;
   candleCount?: number;
   donationCandleCount?: number;
+  thread?: { role: string; message: string }[];
 }
 
 export default function AdminPage() {
@@ -50,7 +51,7 @@ export default function AdminPage() {
     try {
       const [confessionRes, statsRes] = await Promise.all([
         fetch('/api/confessions'),
-        fetch('/api/candle/total')
+        fetch('/api/candle/total'),
       ]);
 
       if (!confessionRes.ok || !statsRes.ok) {
@@ -88,64 +89,60 @@ export default function AdminPage() {
     }
   };
 
-const exportToCSV = () => {
-  const headers = ['Created At', 'Conversation', 'Candle Count', 'Donation Candles'];
+  const exportToCSV = () => {
+    const headers = ['Created At', 'Conversation', 'Candle Count', 'Donation Candles'];
 
-  const rows = confessions.map(conf => {
-    let conversation = '';
+    const rows = confessions.map((conf) => {
+      let conversation = '';
 
-    if (Array.isArray((conf as any).thread)) {
-conversation = (conf as any).thread
-  .map((t: any) => `${t.role === 'user' ? 'You' : 'Father'}: ${t.message}`)
-  .join(' | ');
+      if (Array.isArray(conf.thread)) {
+        conversation = conf.thread
+          .map((t) => `${t.role === 'user' ? 'You' : 'Father'}: ${t.message}`)
+          .join(' | ');
+      } else {
+        conversation = `You: ${conf.message}`;
+        if (conf.reply) conversation += ` | Father: ${conf.reply}`;
+      }
 
-    } else {
-      conversation = `You: ${conf.message}`;
-      if (conf.reply) conversation += ` | Father: ${conf.reply}`;
-    }
+      return [
+        conf.createdAt ? new Date(conf.createdAt).toLocaleString() : 'Unknown',
+        conversation,
+        String(conf.candleCount ?? 0),
+        String(conf.donationCandleCount ?? 0),
+      ];
+    });
 
-    return [
-      conf.createdAt ? new Date(conf.createdAt).toLocaleString() : 'Unknown',
-      conversation,
-      String(conf.candleCount ?? 0),
-      String(conf.donationCandleCount ?? 0),
-    ];
-  });
+    const summaryRow = ['TOTAL', '', candleCount.toString(), donationCount.toString()];
 
-  const summaryRow = [
-    'TOTAL',
-    '',
-    candleCount.toString(),
-    donationCount.toString(),
-  ];
+    const csvContent = [headers, ...rows, summaryRow]
+      .map((r) => r.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
+      .join('\n');
 
-  const csvContent = [headers, ...rows, summaryRow]
-    .map(r => r.map(cell => `"${cell.replace(/"/g, '""')}"`).join(','))
-    .join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'confessions_export.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.setAttribute('download', 'confessions_export.csv');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-
-  const sortedConfessions = [...confessions].filter(conf => {
-    return conf.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           conf.reply?.toLowerCase().includes(searchTerm.toLowerCase());
-  }).sort((a, b) => {
-    if (sortKey === 'candles') {
-      return (b.candleCount ?? 0) - (a.candleCount ?? 0);
-    } else if (sortKey === 'donations') {
-      return (b.donationCandleCount ?? 0) - (a.donationCandleCount ?? 0);
-    } else {
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    }
-  });
+  const sortedConfessions = [...confessions]
+    .filter(
+      (conf) =>
+        conf.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        conf.reply?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortKey === 'candles') {
+        return (b.candleCount ?? 0) - (a.candleCount ?? 0);
+      } else if (sortKey === 'donations') {
+        return (b.donationCandleCount ?? 0) - (a.donationCandleCount ?? 0);
+      } else {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
 
   const visibleConfessions = sortedConfessions.slice(0, visibleCount);
 
@@ -175,22 +172,10 @@ conversation = (conf as any).thread
       <h1 className="text-2xl font-bold text-center mb-6">Admin Dashboard</h1>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-6">
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Confessions</div>
-          <div className="text-xl font-semibold">{totalConfessions}</div>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Silent Confessions</div>
-          <div className="text-xl font-semibold">{silentCount}</div>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Candles Lit</div>
-          <div className="text-xl font-semibold">{candleCount}</div>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <div className="text-sm text-gray-500">Donation Candles</div>
-          <div className="text-xl font-semibold">{donationCount}</div>
-        </div>
+        <StatCard label="Confessions" value={totalConfessions} />
+        <StatCard label="Silent Confessions" value={silentCount} />
+        <StatCard label="Candles Lit" value={candleCount} />
+        <StatCard label="Donation Candles" value={donationCount} />
       </div>
 
       <div className="flex justify-between items-center mb-4">
@@ -224,29 +209,35 @@ conversation = (conf as any).thread
       <div className="space-y-3">
         {visibleConfessions.map((conf) => (
           <div key={conf._id} className="bg-white p-4 rounded shadow">
-<div className="text-sm text-gray-800 whitespace-pre-wrap space-y-1">
-  {Array.isArray((conf as any).thread)
-(conf as any).thread.map((t: any, i: number) => (
-  <div key={i}>
-    <span className="font-semibold">
-      {t.role === 'user' ? 'You:' : 'Father:'}
-    </span>{' '}
-    {t.message}
-  </div>
-))
-
-    : (
-        <>
-          <div><span className="font-semibold">You:</span> {conf.message}</div>
-          {conf.reply && (
-            <div className="mt-1"><span className="font-semibold">Father:</span> {conf.reply}</div>
-          )}
-        </>
-      )}
-</div>
-
+            <div className="text-sm text-gray-800 whitespace-pre-wrap space-y-1">
+              {Array.isArray(conf.thread) ? (
+                conf.thread.map((t, i) => (
+                  <div key={i}>
+                    <span className="font-semibold">
+                      {t.role === 'user' ? 'You:' : 'Father:'}
+                    </span>{' '}
+                    {t.message}
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div>
+                    <span className="font-semibold">You:</span> {conf.message}
+                  </div>
+                  {conf.reply && (
+                    <div className="mt-1">
+                      <span className="font-semibold">Father:</span> {conf.reply}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
             <div className="flex justify-between mt-2 text-xs text-gray-400">
-              <span>{conf.createdAt ? new Date(conf.createdAt).toLocaleString() : 'Unknown'}</span>
+              <span>
+                {conf.createdAt
+                  ? new Date(conf.createdAt).toLocaleString()
+                  : 'Unknown'}
+              </span>
               <div className="flex items-center gap-2">
                 <span>🕯 {conf.candleCount ?? 0}</span>
                 <span>✨ {conf.donationCandleCount ?? 0}</span>
@@ -272,6 +263,15 @@ conversation = (conf as any).thread
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="bg-white p-4 rounded shadow">
+      <div className="text-sm text-gray-500">{label}</div>
+      <div className="text-xl font-semibold">{value}</div>
     </div>
   );
 }
