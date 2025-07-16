@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources/chat';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -29,7 +30,7 @@ Example safe reply if unsure:
 "My child, I do not know for certain, but I am here to listen and walk beside you in faith."
 `;
 
-  const messages = [
+  const messages: ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt },
     ...thread.map((m) => ({
       role: m.role === 'father' ? 'assistant' : 'user',
@@ -40,7 +41,7 @@ Example safe reply if unsure:
   const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages,
-    temperature: 0.75, // lowered slightly to reduce randomness
+    temperature: 0.75,
   });
 
   return (
