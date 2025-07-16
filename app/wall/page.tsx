@@ -2,9 +2,7 @@
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 
-
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ConfessionCard from '@/components/ConfessionCard';
 import DonateModal from '@/components/DonateModal';
@@ -17,13 +15,24 @@ interface Confession {
   donationCandleCount?: number;
 }
 
+function SuccessWatcher({ onSuccess }: { onSuccess: () => void }) {
+  const searchParams = useSearchParams();
+  const success = searchParams.get('success');
+
+  useEffect(() => {
+    if (success === '1') {
+      onSuccess();
+    }
+  }, [success, onSuccess]);
+
+  return null;
+}
+
 export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
   const [donateOpen, setDonateOpen] = useState(false);
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const searchParams = useSearchParams();
-  const success = searchParams?.get('success');
 
   const fetchConfessions = async () => {
     try {
@@ -63,12 +72,6 @@ export default function WallPage() {
   }, []);
 
   useEffect(() => {
-    if (success === '1') {
-      fetchDonationCandles();
-    }
-  }, [success]);
-
-  useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
     };
@@ -83,14 +86,17 @@ export default function WallPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-12 relative">
       <div className="text-center mb-4">
-<button
-  onClick={() => setDonateOpen(true)}
-  className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-5 py-2 rounded"
->
-  Donate Candles
-</button>
-
+        <button
+          onClick={() => setDonateOpen(true)}
+          className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-5 py-2 rounded"
+        >
+          Donate Candles
+        </button>
       </div>
+
+      <Suspense fallback={null}>
+        <SuccessWatcher onSuccess={fetchDonationCandles} />
+      </Suspense>
 
       {confessions.length > 0 ? (
         confessions.map((confession) => (
