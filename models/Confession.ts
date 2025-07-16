@@ -25,21 +25,21 @@ const ConfessionSchema = new Schema(
 // Initialize thread if missing
 ConfessionSchema.pre('save', function (next) {
   if (!this.thread?.length && this.message) {
-    this.thread = [
-      {
-        role: 'user',
-        message: this.message,
-        timestamp: this.createdAt || new Date(),
-      } as any,
-    ];
-
-    if (this.reply) {
-      this.thread.push({
+(this as any).set('thread', [
+  {
+    role: 'user',
+    message: this.message,
+    timestamp: this.createdAt || new Date(),
+  },
+  ...(this.reply
+    ? [{
         role: 'father',
         message: this.reply,
         timestamp: new Date(),
-      } as any);
-    }
+      }]
+    : []),
+]);
+
   }
 
   next();
