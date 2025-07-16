@@ -30,13 +30,13 @@ Example safe reply if unsure:
 "My child, I do not know for certain, but I am here to listen and walk beside you in faith."
 `;
 
-  const messages: ChatCompletionMessageParam[] = [
-    { role: 'system', content: systemPrompt },
-    ...thread.map((m) => ({
-      role: m.role === 'father' ? 'assistant' : 'user',
-      content: m.message,
-    })),
-  ];
+const messages: OpenAI.ChatCompletionMessageParam[] = [
+  { role: 'system', content: systemPrompt },
+  ...thread.map((m) => ({
+    role: m.role === 'father' ? 'assistant' : 'user',
+    content: m.message,
+  } as OpenAI.ChatCompletionUserMessageParam | OpenAI.ChatCompletionAssistantMessageParam)),
+];
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
