@@ -95,9 +95,10 @@ const exportToCSV = () => {
     let conversation = '';
 
     if (Array.isArray((conf as any).thread)) {
-      conversation = (conf as any).thread
-        .map(t => `${t.role === 'user' ? 'You' : 'Father'}: ${t.message}`)
-        .join(' | ');
+conversation = (conf as any).thread
+  .map((t: any) => `${t.role === 'user' ? 'You' : 'Father'}: ${t.message}`)
+  .join(' | ');
+
     } else {
       conversation = `You: ${conf.message}`;
       if (conf.reply) conversation += ` | Father: ${conf.reply}`;
