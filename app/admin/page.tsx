@@ -226,14 +226,15 @@ conversation = (conf as any).thread
           <div key={conf._id} className="bg-white p-4 rounded shadow">
 <div className="text-sm text-gray-800 whitespace-pre-wrap space-y-1">
   {Array.isArray((conf as any).thread)
-    ? (conf as any).thread.map((t, i) => (
-        <div key={i}>
-          <span className="font-semibold">
-            {t.role === 'user' ? 'You:' : 'Father:'}
-          </span>{' '}
-          {t.message}
-        </div>
-      ))
+(conf as any).thread.map((t: any, i: number) => (
+  <div key={i}>
+    <span className="font-semibold">
+      {t.role === 'user' ? 'You:' : 'Father:'}
+    </span>{' '}
+    {t.message}
+  </div>
+))
+
     : (
         <>
           <div><span className="font-semibold">You:</span> {conf.message}</div>
