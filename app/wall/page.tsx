@@ -17,7 +17,7 @@ interface Confession {
 
 function SuccessWatcher({ onSuccess }: { onSuccess: () => void }) {
   const searchParams = useSearchParams();
-  const success = searchParams.get('success');
+  const success = searchParams?.get('success'); // ✅ now safe
 
   useEffect(() => {
     if (success === '1') {
@@ -27,6 +27,7 @@ function SuccessWatcher({ onSuccess }: { onSuccess: () => void }) {
 
   return null;
 }
+
 
 export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
