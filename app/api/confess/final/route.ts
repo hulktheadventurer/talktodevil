@@ -12,20 +12,33 @@ export async function POST(req: NextRequest) {
     }
 
     const messageEntry = thread.find((msg: any) => msg.role === 'user');
-    const replyEntry = thread.find((msg: any) => msg.role === 'father');
+    const replyEntry = thread.find((msg: any) =>
+      ['father', 'devil', 'god', 'buddha'].includes(msg.role)
+    );
 
     if (!messageEntry || !replyEntry) {
       return NextResponse.json({ error: 'Missing message or reply' }, { status: 400 });
     }
 
-    const saved = await Confession.create({
-      public: isPublic === true, // ✅ explicitly true
-      thread,
-      message: messageEntry.message,
-      reply: replyEntry.message,
-    });
+    console.log('🧾 Full thread:', thread);
+    console.log('✅ Public:', isPublic);
+    console.log('📩 Message Entry:', messageEntry);
+    console.log('💬 Reply Entry:', replyEntry);
 
-    return NextResponse.json({ success: true, id: saved._id });
+    try {
+      const saved = await Confession.create({
+        public: isPublic === true,
+        thread,
+        message: messageEntry.message,
+        reply: replyEntry.message,
+      });
+
+      return NextResponse.json({ success: true, id: saved._id });
+    } catch (err: any) {
+      console.error('🔥 MongoDB insert error:', err.message || err);
+      return NextResponse.json({ error: 'DB error: ' + err.message }, { status: 500 });
+    }
+
   } catch (err: any) {
     console.error('Final save error:', err.message || err);
     return NextResponse.json({ error: 'Failed to save confession' }, { status: 500 });

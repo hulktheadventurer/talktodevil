@@ -4,8 +4,7 @@ import connectToDB from '@/lib/dbcConnect';
 import DonationLog from '@/models/DonationLog';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-apiVersion: '2025-05-28.basil',
-
+  apiVersion: '2025-05-28.basil',
 });
 
 // Disable body parsing for raw Stripe signature verification
@@ -39,17 +38,13 @@ export async function POST(req: NextRequest) {
 
     const confessionId = session.metadata?.confessionId || '';
     const amount = Number(session.amount_total) / 100;
-
-    let candleCount = 0;
-    if (amount === 1) candleCount = 3;
-    else if (amount === 3) candleCount = 10;
-    else if (amount === 5) candleCount = 20;
+    const flameCount = parseInt(session.metadata?.flameCount || '0');
 
     try {
       await DonationLog.create({
         sessionId: session.id,
         amount,
-        candleCount,
+        flameCount,
         source: 'stripe',
         confessionId,
       });

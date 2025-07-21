@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const DonationLogSchema = new mongoose.Schema({
   sessionId: { type: String, required: true }, // anonymous session identifier or userId
   confessionId: { type: mongoose.Schema.Types.Mixed, required: true }, // Accepts ObjectId or string like 'blessing'
-  candleCount: { type: Number, required: true },
+  flameCount: { type: Number, required: true }, // renamed from candleCount
   source: { type: String, enum: ['donation', 'apply'], default: 'donation' },
   createdAt: { type: Date, default: Date.now },
 });

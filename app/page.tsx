@@ -31,12 +31,12 @@ export default function HomePage() {
         body: JSON.stringify({ thread: [...thread, userMessage] }),
       });
       const data = await res.json();
-      const fatherMessage = {
-        role: 'father',
+      const devilMessage = {
+        role: 'devil',
         message: data.reply,
         timestamp: new Date().toISOString(),
       };
-      setThread((prev) => [...prev, fatherMessage]);
+      setThread((prev) => [...prev, devilMessage]);
     } catch (err) {
       console.error('Reply error', err);
     } finally {
@@ -55,8 +55,8 @@ export default function HomePage() {
       const data = await res.json();
 
       if (res.ok) {
-        console.log('Confession posted:', data);
-        alert('✅ Confession posted to wall!');
+        console.log('Posted:', data);
+        alert('✅ Your pact has been sealed on the Wall!');
         setPosted(true);
       } else {
         console.error('Post to wall failed:', data);
@@ -74,18 +74,18 @@ export default function HomePage() {
 
   return (
     <div className="relative px-6 py-8 w-full max-w-3xl mx-auto z-10">
-      <h2 className="text-3xl font-bold mb-6 text-center text-amber-800 z-10 relative">
-        Speak, My Child
+      <h2 className="text-3xl font-bold mb-6 text-center text-red-800 z-10 relative">
+        Speak, Mortal 😈
       </h2>
 
       <div
-        className={`bg-white shadow-xl rounded-2xl p-6 border border-amber-200 max-h-[60vh] overflow-y-auto flex flex-col ${
+        className={`bg-white shadow-xl rounded-2xl p-6 border border-red-200 max-h-[60vh] overflow-y-auto flex flex-col ${
           thread.length === 0 ? 'justify-center min-h-[120px]' : 'space-y-3'
         }`}
       >
         {thread.length === 0 && !loading && (
-          <p className="text-center text-amber-300 italic">
-            Start a conversation with the Father...
+          <p className="text-center text-red-300 italic">
+            What torment burdens your soul?
           </p>
         )}
 
@@ -93,17 +93,19 @@ export default function HomePage() {
           <div
             key={idx}
             className={`max-w-[80%] px-4 py-2 rounded-xl text-sm whitespace-pre-wrap ${
-              entry.role === 'father'
-                ? 'bg-amber-100 text-amber-800 self-start'
-                : 'bg-amber-600 text-white self-end'
+              ['father', 'devil', 'god', 'buddha'].includes(entry.role)
+                ? 'bg-red-100 text-red-800 self-start'
+                : 'bg-red-600 text-white self-end'
             }`}
           >
-            <strong>{entry.role === 'father' ? 'Priest:' : 'You:'}</strong> {entry.message}
+            <strong>{entry.role === 'user' ? 'You:' : 'Devil:'}</strong> {entry.message}
           </div>
         ))}
+
         {loading && (
-          <div className="italic text-amber-600 self-start">The Father is listening...</div>
+          <div className="italic text-red-600 self-start">The Devil is listening...</div>
         )}
+
         <div ref={responseEndRef} />
       </div>
 
@@ -117,8 +119,8 @@ export default function HomePage() {
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Speak again..."
-          className="w-full p-4 border-2 border-amber-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 bg-amber-50"
+          placeholder="Whisper your sins..."
+          className="text-black w-full p-4 border-2 border-red-300 rounded-2xl resize-none focus:outline-none focus:ring-2 focus:ring-red-400 bg-red-50"
           rows={3}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -132,7 +134,7 @@ export default function HomePage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-amber-600 text-white px-8 py-2 rounded-2xl hover:bg-amber-700 font-semibold shadow"
+            className="bg-red-600 text-white px-8 py-2 rounded-2xl hover:bg-red-700 font-semibold shadow"
           >
             Send
           </button>
@@ -140,9 +142,9 @@ export default function HomePage() {
             type="button"
             disabled={posted || thread.length === 0}
             onClick={handlePostToWall}
-            className="bg-purple-600 text-white px-8 py-2 rounded-2xl hover:bg-purple-700 font-semibold shadow"
+            className="bg-purple-700 text-white px-8 py-2 rounded-2xl hover:bg-purple-800 font-semibold shadow"
           >
-            {posted ? '✅ Posted' : 'End the chat and post to Wall'}
+            {posted ? '✅ Pact Sealed' : 'Seal this pact and publish it'}
           </button>
         </div>
       </form>

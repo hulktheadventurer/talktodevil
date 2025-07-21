@@ -15,6 +15,9 @@ export default function DisclaimerPage() {
         <p>
           Confessly does not store any personally identifiable information unless explicitly submitted. All confessions are anonymous by default.
         </p>
+        <p>
+          The additional experiences linked under the <strong>BoredAtWork</strong> universe — such as <em>TalkToDevil</em>, <em>AskTheDevil</em>, and others — are fictional entertainment platforms powered by AI. They are not affiliated with any real religious or philosophical institutions.
+        </p>
       </div>
     </main>
   );

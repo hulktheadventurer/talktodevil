@@ -4,13 +4,12 @@ import CandleLog from '../../../../models/CandleLog';
 import DonationLog from '../../../../models/DonationLog';
 import Confession from '../../../../models/Confession';
 
-
 export async function GET() {
   await connectToDB();
 
   const [candleAgg, donationAgg, totalConfessions, silentConfessions] = await Promise.all([
     CandleLog.aggregate([{ $group: { _id: null, count: { $sum: '$count' } } }]),
-    DonationLog.aggregate([{ $group: { _id: null, count: { $sum: '$candleCount' } } }]),
+    DonationLog.aggregate([{ $group: { _id: null, count: { $sum: '$flameCount' } } }]), // updated
     Confession.countDocuments(),
     Confession.countDocuments({ public: false }),
   ]);

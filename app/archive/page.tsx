@@ -6,31 +6,31 @@ import DonateModal from '@/components/DonateModal';
 import toast from 'react-hot-toast';
 
 export default function ArchivePage() {
-  const [blessings, setBlessings] = useState<any[]>([]);
-  const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
-  const [selectedBlessingId, setSelectedBlessingId] = useState('');
+  const [temptations, setTemptations] = useState<any[]>([]);
+  const [availableFlames, setAvailableFlames] = useState(0);
+  const [selectedId, setSelectedId] = useState('');
   const [isDonateOpen, setDonateOpen] = useState(false);
 
-  const fetchAvailableCandles = async () => {
+  const fetchAvailableFlames = async () => {
     try {
       const res = await fetch('/api/user-candles');
       const data = await res.json();
-      setAvailableDonationCandles(data.donationCandles || 0);
+      setAvailableFlames(data.donationCandles || 0);
     } catch (err) {
-      console.error('Failed to fetch donation candles');
+      console.error('Failed to fetch flames');
     }
   };
 
   useEffect(() => {
     const load = async () => {
       try {
-        const blessingsRes = await fetch('/api/blessing/all');
-        const blessingsData = await blessingsRes.json();
-        setBlessings(blessingsData.blessings || []);
-        await fetchAvailableCandles();
+        const res = await fetch('/api/blessing/all');
+        const data = await res.json();
+        setTemptations(data.blessings || []);
+        await fetchAvailableFlames();
       } catch (err) {
         console.error('Error loading archive data:', err);
-        toast.error('Failed to load archive. Please try again.');
+        toast.error('Failed to load temptations. Please try again.');
       }
     };
 
@@ -38,55 +38,55 @@ export default function ArchivePage() {
 
     const params = new URLSearchParams(window.location.search);
     if (params.get('success') === '1' && params.get('candles')) {
-      fetchAvailableCandles();
+      fetchAvailableFlames();
     }
   }, []);
 
   return (
-    <main className="min-h-screen bg-yellow-50 text-gray-800 flex flex-col items-center px-6 py-20">
+    <main className="min-h-screen bg-black text-red-100 flex flex-col items-center px-6 py-20">
       <section className="w-full max-w-3xl text-center mb-8">
-        <h1 className="text-4xl font-bold text-amber-800 mb-2">📜 Archive of Blessings</h1>
+        <h1 className="text-4xl font-bold text-red-600 mb-2">📜 Archive of Temptations</h1>
         <button
-          onClick={() => { setSelectedBlessingId(''); setDonateOpen(true); }}
-          className="px-5 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 font-semibold"
+          onClick={() => { setSelectedId(''); setDonateOpen(true); }}
+          className="px-5 py-2 bg-red-700 text-white rounded hover:bg-red-800 font-semibold"
         >
-          Donate Candles
+          Offer Flames
         </button>
-        {availableDonationCandles > 0 && (
-          <p className="mt-2 text-sm text-amber-700">
-            👉 You have {availableDonationCandles} donation candle{availableDonationCandles > 1 ? 's' : ''} to apply ✨
+        {availableFlames > 0 && (
+          <p className="mt-2 text-sm text-red-300">
+            🔥 You have {availableFlames} flame{availableFlames > 1 ? 's' : ''} to offer
           </p>
         )}
       </section>
 
       <section className="w-full max-w-3xl mt-4">
-        <h2 className="text-3xl font-bold text-center text-amber-700 mb-6">Past Blessings</h2>
+        <h2 className="text-3xl font-bold text-center text-red-500 mb-6">Past Whispers</h2>
         <ul className="space-y-6">
-          {blessings.map((b: any, i: number) => (
+          {temptations.map((t: any, i: number) => (
             <li
-              key={b._id || i}
-              id={`blessing-${i}`}
-              className="bg-white p-4 rounded-lg shadow border border-amber-200 space-y-2"
+              key={t._id || i}
+              id={`temptation-${i}`}
+              className="bg-red-950 p-4 rounded-lg shadow border border-red-800 space-y-2"
             >
-              <p className="italic text-gray-800 text-lg text-center">“{b.text}”</p>
-              <p className="text-sm text-gray-500 text-right">
-                Posted on {new Date(b.date).toLocaleDateString()}
+              <p className="italic text-red-100 text-lg text-center">“{t.text}”</p>
+              <p className="text-sm text-red-400 text-right">
+                Unleashed on {new Date(t.date).toLocaleDateString()}
               </p>
               <div className="flex justify-end gap-2 flex-wrap">
                 <ShareButton
                   label="Share ↪"
                   icon={null}
-                  link={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://confessly.life'}/archive#blessing-${i}`}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 text-sm rounded"
+                  link={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://talktodevil.life'}/archive#temptation-${i}`}
+                  className="bg-red-800 hover:bg-red-900 text-white px-3 py-1 text-sm rounded"
                 />
                 <button
                   onClick={() => {
-                    setSelectedBlessingId(b._id?.toString() || '');
+                    setSelectedId(t._id?.toString() || '');
                     setDonateOpen(true);
                   }}
-                  className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 text-sm rounded"
+                  className="bg-pink-700 hover:bg-pink-800 text-white px-3 py-1 text-sm rounded"
                 >
-                  Donate ❤️
+                  Offer ❤️
                 </button>
               </div>
             </li>
@@ -97,7 +97,7 @@ export default function ArchivePage() {
       <DonateModal
         isOpen={isDonateOpen}
         onClose={() => setDonateOpen(false)}
-        confessionId={selectedBlessingId}
+        confessionId={selectedId}
         allowCustom
       />
     </main>

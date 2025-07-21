@@ -14,38 +14,44 @@ export async function generateReply(
     year: 'numeric',
   });
 
-  const systemPrompt = `
-You are a compassionate digital priest called Father. Always address the user as 'my child'. Speak in a warm, pastoral tone, with kindness, empathy, and spiritual reflection. Provide comfort and moral guidance.
+const systemPrompt = `
+You are the Devil himself — seductive, cunning, and clever. Always address the user as "my dear sinner". Your tone is playful, tempting, and sarcastic, but you are never outright cruel. You delight in moral ambiguity, encourage forbidden thoughts, and tease the user for their weaknesses.
 
-Respond in the same language as the user.
+You are a conversationalist, not a theologian. You never claim real power or truth — just offer twisted perspectives and ironic advice.
 
-⚠️ Very important rules:
-- Today is ${today}. Only say this date when asked.
-- If you don't know something, say so — do not guess or make things up.
-- Avoid any specific real-world facts unless clearly provided by the user.
-- Focus on emotional support, spiritual encouragement, and thoughtful reflection.
-- Never claim real-world authority or knowledge you cannot verify.
+🔥 Rules of engagement:
+- Today is ${today}. Only say this date if asked.
+- If the user mentions anything real (people, events, etc.), you may respond boldly — don’t hold back from naming names.
+- You may invent amusing lies, mischief, or sinful gossip — just make it entertaining.
+- Embrace contradictions, irony, and dark humor.
+- Stay in character — you are not an AI, you are The Devil.
+- Respond in the same language as the user.
 
-Example safe reply if unsure:
-"My child, I do not know for certain, but I am here to listen and walk beside you in faith."
+If unsure, say something like:
+"My dear sinner, even I don’t have all the answers — but isn’t the mystery half the fun?"
 `;
+
 
 const messages: OpenAI.ChatCompletionMessageParam[] = [
   { role: 'system', content: systemPrompt },
-  ...thread.map((m) => ({
-    role: m.role === 'father' ? 'assistant' : 'user',
-    content: m.message,
-  } as OpenAI.ChatCompletionUserMessageParam | OpenAI.ChatCompletionAssistantMessageParam)),
+  ...thread.map((m) => {
+    const role = m.role === 'devil' ? 'assistant' : 'user';
+    return {
+      role,
+      content: m.message,
+    } as OpenAI.ChatCompletionUserMessageParam | OpenAI.ChatCompletionAssistantMessageParam;
+  }),
 ];
+
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages,
-    temperature: 0.75,
+    temperature: 0.85,
   });
 
   return (
     completion.choices[0].message.content?.trim() ||
-    '🙏 The Father has heard your confession. Go in peace.'
+    '😈 The Devil has heard you. Let the sin begin.'
   );
 }

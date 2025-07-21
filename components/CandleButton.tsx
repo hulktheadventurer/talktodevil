@@ -14,7 +14,7 @@ export default function CandleButton({
   onLit?: () => void;
   className?: string;
   small?: boolean;
-  glowType?: string; // ✅ Added glowType prop
+  glowType?: string;
 }) {
   const [lit, setLit] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,12 +40,12 @@ export default function CandleButton({
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err?.error || 'Failed to light candle');
+        throw new Error(err?.error || 'Failed to offer flame');
       }
 
       localStorage.setItem(`candle-lit-${confessionId}`, 'true');
       setLit(true);
-      toast.success('🕯️ Candle lit');
+      toast.success('🔥 Flame offered');
       onLit?.();
       setGlow(true);
       setTimeout(() => setGlow(false), 600);
@@ -56,7 +56,7 @@ export default function CandleButton({
     }
   };
 
-  const glowClass = glow ? `animate-glow ${glowType ? `glow-${glowType}` : 'text-yellow-500'}` : '';
+  const glowClass = glow ? `animate-glow ${glowType ? `glow-${glowType}` : 'text-red-500'}` : '';
 
   return (
     <button
@@ -64,7 +64,7 @@ export default function CandleButton({
       disabled={lit || loading}
       className={`${glowClass} ${lit || loading ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
     >
-      {loading ? 'Lighting...' : small ? '🕯️' : 'Light 🕯️'}
+      {loading ? 'Offering...' : small ? '🔥' : 'Offer 🔥'}
     </button>
   );
 }

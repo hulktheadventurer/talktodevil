@@ -17,7 +17,7 @@ interface Confession {
 
 function SuccessWatcher({ onSuccess }: { onSuccess: () => void }) {
   const searchParams = useSearchParams();
-  const success = searchParams?.get('success'); // ✅ now safe
+  const success = searchParams?.get('success');
 
   useEffect(() => {
     if (success === '1') {
@@ -27,7 +27,6 @@ function SuccessWatcher({ onSuccess }: { onSuccess: () => void }) {
 
   return null;
 }
-
 
 export default function WallPage() {
   const [confessions, setConfessions] = useState<Confession[]>([]);
@@ -46,14 +45,14 @@ export default function WallPage() {
             ...conf,
             thread: conf.thread || [
               { role: 'user', message: conf.message },
-              ...(conf.reply ? [{ role: 'father', message: conf.reply }] : []),
+              ...(conf.reply ? [{ role: 'devil', message: conf.reply }] : []),
             ],
           }))
         );
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 100);
       }
     } catch (err) {
-      console.error('Failed to fetch confessions', err);
+      console.error('🔥 Failed to summon confessions', err);
     }
   };
 
@@ -63,7 +62,7 @@ export default function WallPage() {
       const data = await res.json();
       setAvailableDonationCandles(data.donationCandles || 0);
     } catch (err) {
-      console.error('Failed to fetch donation candles');
+      console.error('🔥 Failed to fetch your infernal flames');
     }
   };
 
@@ -89,9 +88,9 @@ export default function WallPage() {
       <div className="text-center mb-4">
         <button
           onClick={() => setDonateOpen(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-5 py-2 rounded"
+          className="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded"
         >
-          Donate Candles
+          Offer Flames
         </button>
       </div>
 
@@ -109,7 +108,9 @@ export default function WallPage() {
           />
         ))
       ) : (
-        <p className="text-center text-gray-500 mt-6">No confessions found.</p>
+        <p className="text-center text-red-400 mt-6 italic">
+          The abyss is silent... for now.
+        </p>
       )}
 
       <DonateModal isOpen={donateOpen} onClose={() => setDonateOpen(false)} />
@@ -117,7 +118,7 @@ export default function WallPage() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full shadow-lg z-50"
+          className="fixed bottom-6 right-6 bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-full shadow-lg z-50"
         >
           ↑ Top
         </button>

@@ -3,7 +3,11 @@ import mongoose, { Schema, model, models } from 'mongoose';
 const ThreadSchema = new Schema(
   {
     message: String,
-    role: { type: String, enum: ['user', 'father'] },
+ role: {
+  type: String,
+  enum: ['user', 'father', 'devil', 'god', 'buddha'], // ✅ Add allowed roles here
+},
+
     timestamp: { type: Date, default: Date.now },
   },
   { _id: false }

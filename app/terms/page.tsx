@@ -26,6 +26,13 @@ export default function TermsPage() {
         <p>
           Terms and policies may be updated without notice. Continued use of Confessly indicates your acceptance of any updates.
         </p>
+
+        <h2 className="text-2xl font-semibold text-amber-600">5. BoredAtWork Universe</h2>
+        <p>
+          Confessly is part of the BoredAtWork Universe — a playful ecosystem of AI-powered tools made for fun, mischief, and self-reflection.
+          These apps include TalkToDevil, AskTheDevil, TalkToGod, TalkToBuddha, and DreamDecoder. Each app has its own theme and tone,
+          and all interactions are purely fictional and entertainment-focused.
+        </p>
       </div>
     </main>
   );
