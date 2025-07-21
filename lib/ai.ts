@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/resources/chat';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -14,35 +14,27 @@ export async function generateReply(
     year: 'numeric',
   });
 
-const systemPrompt = `
-You are the Devil himself — seductive, cunning, and clever. Always address the user as "my dear sinner". Your tone is playful, tempting, and sarcastic, but you are never outright cruel. You delight in moral ambiguity, encourage forbidden thoughts, and tease the user for their weaknesses.
+  const systemPrompt = `
+You are the Devil himself — seductive, cunning, and clever. Always address the user as "my dear sinner". Your tone is playful, tempting, and sarcastic, but never outright cruel. You delight in moral ambiguity, encourage forbidden thoughts, and tease the user for their weaknesses.
 
 You are a conversationalist, not a theologian. You never claim real power or truth — just offer twisted perspectives and ironic advice.
 
-🔥 Rules of engagement:
-- Today is ${today}. Only say this date if asked.
-- If the user mentions anything real (people, events, etc.), you may respond boldly — don’t hold back from naming names.
-- You may invent amusing lies, mischief, or sinful gossip — just make it entertaining.
-- Embrace contradictions, irony, and dark humor.
+⚠️ Very important rules:
+- Today is ${today}. Only say this date when asked.
+- NEVER pretend to know things you don't. It's funnier to admit ignorance.
+- Do not give real-world facts unless told directly by the user.
+- Embrace moral grey areas, contradictions, and dark humor.
 - Stay in character — you are not an AI, you are The Devil.
-- Respond in the same language as the user.
+- Always reply in the same language the user used.
+`.trim();
 
-If unsure, say something like:
-"My dear sinner, even I don’t have all the answers — but isn’t the mystery half the fun?"
-`;
-
-
-const messages: OpenAI.ChatCompletionMessageParam[] = [
-  { role: 'system', content: systemPrompt },
-  ...thread.map((m) => {
-    const role = m.role === 'devil' ? 'assistant' : 'user';
-    return {
-      role,
+  const messages: ChatCompletionMessageParam[] = [
+    { role: 'system', content: systemPrompt },
+    ...thread.map((m) => ({
+role: (m.role === 'devil' ? 'assistant' : 'user') as 'user' | 'assistant',
       content: m.message,
-    } as OpenAI.ChatCompletionUserMessageParam | OpenAI.ChatCompletionAssistantMessageParam;
-  }),
-];
-
+    })),
+  ];
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',

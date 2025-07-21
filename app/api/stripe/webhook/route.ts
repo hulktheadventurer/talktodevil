@@ -4,11 +4,11 @@ import dbConnect from '@/lib/mongodb';
 import DonationLog from '@/models/DonationLog';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-apiVersion: '2025-05-28.basil',
+  apiVersion: '2025-05-28.basil',
 });
 
 export async function POST(req: NextRequest) {
-  await dbConnect(); // ✅ Fixed here
+  await dbConnect();
 
   const rawBody = await req.text();
   const signature = req.headers.get('stripe-signature') || '';
@@ -29,20 +29,18 @@ export async function POST(req: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     const confessionId = session.metadata?.confessionId || '';
+    const flameCount = parseInt(session.metadata?.flameCount || '0');
     const amount = Number(session.amount_total) / 100;
-
-    let candleCount = 0;
-    if (amount === 1) candleCount = 3;
-    else if (amount === 3) candleCount = 10;
-    else if (amount === 5) candleCount = 20;
 
     await DonationLog.create({
       sessionId: session.id,
       amount,
-      candleCount,
+      flameCount,
       source: 'stripe',
       confessionId,
     });
+
+    console.log(`🔥 Logged ${flameCount} flames for confession ${confessionId}`);
   }
 
   return new Response('Received', { status: 200 });

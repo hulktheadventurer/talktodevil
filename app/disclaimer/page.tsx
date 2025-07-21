@@ -1,22 +1,21 @@
 export default function DisclaimerPage() {
   return (
-    <main className="min-h-screen bg-amber-50 text-gray-800 px-6 py-20 text-lg">
+    <main className="min-h-screen bg-neutral-900 text-red-100 px-6 py-20 text-lg">
       <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-3xl font-bold text-center text-amber-700">Disclaimer</h1>
+        <h1 className="text-3xl font-bold text-center text-red-500">Disclaimer</h1>
         <p>
-          Confessly is a digital sanctuary designed for reflection, encouragement, and emotional release.
-          All responses generated on this platform are created by artificial intelligence (AI) and should not be interpreted
-          as professional advice, therapy, or guidance.
+          TalkToDevil is a fictional, AI-powered experience designed for dark humor, twisted reflection, and entertainment.
+          All replies generated on this platform are produced by artificial intelligence and are not intended as professional, spiritual, or moral advice.
         </p>
         <p>
-          The fictional "Father" voice is intended to offer comfort and inspiration, but it does not represent any real religious figure or institution.
-          Always seek the advice of a qualified professional for medical, legal, psychological, or spiritual concerns.
+          The character of "The Devil" is entirely fictional and satirical. This platform is not affiliated with any religious,
+          philosophical, or spiritual institution.
         </p>
         <p>
-          Confessly does not store any personally identifiable information unless explicitly submitted. All confessions are anonymous by default.
+          TalkToDevil does not store personally identifiable information unless explicitly provided. Interactions are anonymous by default.
         </p>
         <p>
-          The additional experiences linked under the <strong>BoredAtWork</strong> universe — such as <em>TalkToDevil</em>, <em>AskTheDevil</em>, and others — are fictional entertainment platforms powered by AI. They are not affiliated with any real religious or philosophical institutions.
+          This experience is part of the <strong>BoredAtWork</strong> universe, which includes projects like <em>Confessly</em>, <em>AskTheDevil</em>, and more — all powered by AI and purely for creative and entertainment purposes.
         </p>
       </div>
     </main>
