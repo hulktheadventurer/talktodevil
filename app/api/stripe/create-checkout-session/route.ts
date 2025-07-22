@@ -9,18 +9,17 @@ export async function POST(req: NextRequest) {
   try {
     const { amount, confessionId } = await req.json();
 
-    // Validate amount
     if (!amount || isNaN(amount)) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
-    // Estimate flameCount for success page stats
-    let flameCount = 0;
-    if (amount === 0.99) flameCount = 1;
-    else if (amount === 2.49) flameCount = 3;
-    else if (amount === 3.99) flameCount = 5;
-    else if (amount === 6.99) flameCount = 10;
-    else flameCount = Math.max(1, Math.floor(amount / 0.99)); // fallback
+    // Estimate lotusCount for stats
+    let lotusCount = 0;
+    if (amount === 0.99) lotusCount = 1;
+    else if (amount === 2.49) lotusCount = 3;
+    else if (amount === 3.99) lotusCount = 5;
+    else if (amount === 6.99) lotusCount = 10;
+    else lotusCount = Math.max(1, Math.floor(amount / 0.99));
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -29,20 +28,20 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'gbp',
             product_data: {
-              name: 'Flame Offering',
-              description: `Flames for confession ${confessionId || 'general'}`,
+              name: 'Lotus Offering',
+              description: `Lotuses for reflection ${confessionId || 'general'}`,
             },
-            unit_amount: Math.round(amount * 100), // pence
+            unit_amount: Math.round(amount * 100),
           },
           quantity: 1,
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/wall?success=1&flames=${flameCount}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/wall?success=1&lotuses=${lotusCount}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/wall?canceled=1`,
       metadata: {
         confessionId: confessionId || '',
-        flameCount: String(flameCount),
+        lotusCount: String(lotusCount),
       },
     });
 

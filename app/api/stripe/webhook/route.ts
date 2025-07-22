@@ -29,18 +29,18 @@ export async function POST(req: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     const confessionId = session.metadata?.confessionId || '';
-    const flameCount = parseInt(session.metadata?.flameCount || '0');
+    const lotusCount = parseInt(session.metadata?.lotusCount || '0');
     const amount = Number(session.amount_total) / 100;
 
     await DonationLog.create({
       sessionId: session.id,
       amount,
-      flameCount,
+      flameCount: lotusCount, // still using field name 'flameCount'
       source: 'stripe',
       confessionId,
     });
 
-    console.log(`🔥 Logged ${flameCount} flames for confession ${confessionId}`);
+    console.log(`🌸 Logged ${lotusCount} lotuses for reflection ${confessionId}`);
   }
 
   return new Response('Received', { status: 200 });

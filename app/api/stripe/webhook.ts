@@ -7,7 +7,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-05-28.basil',
 });
 
-// Disable body parsing for raw Stripe signature verification
 export const config = {
   api: {
     bodyParser: false,
@@ -38,18 +37,18 @@ export async function POST(req: NextRequest) {
 
     const confessionId = session.metadata?.confessionId || '';
     const amount = Number(session.amount_total) / 100;
-    const flameCount = parseInt(session.metadata?.flameCount || '0');
+    const lotusCount = parseInt(session.metadata?.lotusCount || '0');
 
     try {
       await DonationLog.create({
         sessionId: session.id,
         amount,
-        flameCount,
+        flameCount: lotusCount, // ✅ Still stored in flameCount field unless you rename DB
         source: 'stripe',
         confessionId,
       });
     } catch (err) {
-      console.error('⚠️ Failed to log Stripe donation:', err);
+      console.error('⚠️ Failed to log lotus donation:', err);
     }
   }
 

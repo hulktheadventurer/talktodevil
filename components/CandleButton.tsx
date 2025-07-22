@@ -21,7 +21,7 @@ export default function CandleButton({
   const [glow, setGlow] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`candle-lit-${confessionId}`);
+    const saved = localStorage.getItem(`lotus-offered-${confessionId}`);
     if (saved === 'true') {
       setLit(true);
     }
@@ -40,12 +40,12 @@ export default function CandleButton({
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err?.error || 'Failed to offer flame');
+        throw new Error(err?.error || 'Failed to offer lotus');
       }
 
-      localStorage.setItem(`candle-lit-${confessionId}`, 'true');
+      localStorage.setItem(`lotus-offered-${confessionId}`, 'true');
       setLit(true);
-      toast.success('🔥 Flame offered');
+      toast.success('🪷 Lotus offered');
       onLit?.();
       setGlow(true);
       setTimeout(() => setGlow(false), 600);
@@ -56,7 +56,7 @@ export default function CandleButton({
     }
   };
 
-  const glowClass = glow ? `animate-glow ${glowType ? `glow-${glowType}` : 'text-red-500'}` : '';
+  const glowClass = glow ? `animate-glow ${glowType ? `glow-${glowType}` : 'text-yellow-500'}` : '';
 
   return (
     <button
@@ -64,7 +64,7 @@ export default function CandleButton({
       disabled={lit || loading}
       className={`${glowClass} ${lit || loading ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
     >
-      {loading ? 'Offering...' : small ? '🔥' : 'Offer 🔥'}
+      {loading ? 'Offering...' : small ? '🪷' : 'Offer Lotus 🪷'}
     </button>
   );
 }

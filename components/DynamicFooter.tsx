@@ -23,14 +23,16 @@ export default function DynamicFooter() {
           onClick={() => setIsDonateOpen(true)}
           className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-1.5 rounded text-sm"
         >
-          🔥 Offer Flames
+          🌸 Offer Lotus
         </button>
       </div>
 
       <p className="text-xs text-amber-300 italic mb-1">
-        Every flame feeds the inferno.
+        Every lotus nurtures peace and reflection.
       </p>
-      <p className="text-xs italic text-amber-200 mb-3">From the Devil’s lair, with wicked love.</p>
+      <p className="text-xs italic text-amber-200 mb-3">
+        From the mountain, with calm compassion.
+      </p>
 
       {/* BoredAtWork Universe Section */}
       <div className="text-amber-100 text-xs">
@@ -44,7 +46,7 @@ export default function DynamicFooter() {
           <li><a href="https://www.confessly.com" className="underline">Confessly</a> — Whisper to the Father 🙏</li>
         </ul>
         <p className="text-amber-300 italic mt-2">
-          More unholy apps coming soon...
+          More mindful apps arriving soon...
         </p>
       </div>
 

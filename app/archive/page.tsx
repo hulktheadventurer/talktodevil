@@ -6,7 +6,7 @@ import DonateModal from '@/components/DonateModal';
 import toast from 'react-hot-toast';
 
 export default function ArchivePage() {
-  const [temptations, setTemptations] = useState<any[]>([]);
+  const [blessings, setBlessings] = useState<any[]>([]);
   const [availableFlames, setAvailableFlames] = useState(0);
   const [selectedId, setSelectedId] = useState('');
   const [isDonateOpen, setDonateOpen] = useState(false);
@@ -17,7 +17,7 @@ export default function ArchivePage() {
       const data = await res.json();
       setAvailableFlames(data.donationCandles || 0);
     } catch (err) {
-      console.error('Failed to fetch flames');
+      console.error('Failed to fetch lotus offerings');
     }
   };
 
@@ -26,11 +26,11 @@ export default function ArchivePage() {
       try {
         const res = await fetch('/api/blessing/all');
         const data = await res.json();
-        setTemptations(data.blessings || []);
+        setBlessings(data.blessings || []);
         await fetchAvailableFlames();
       } catch (err) {
         console.error('Error loading archive data:', err);
-        toast.error('Failed to load temptations. Please try again.');
+        toast.error('Failed to load reflections. Please try again.');
       }
     };
 
@@ -43,50 +43,50 @@ export default function ArchivePage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-black text-red-100 flex flex-col items-center px-6 py-20">
+    <main className="min-h-screen bg-yellow-50 text-yellow-900 flex flex-col items-center px-6 py-20">
       <section className="w-full max-w-3xl text-center mb-8">
-        <h1 className="text-4xl font-bold text-red-600 mb-2">📜 Archive of Temptations</h1>
+        <h1 className="text-4xl font-bold text-yellow-700 mb-2">📜 Archive of Meditations</h1>
         <button
           onClick={() => { setSelectedId(''); setDonateOpen(true); }}
-          className="px-5 py-2 bg-red-700 text-white rounded hover:bg-red-800 font-semibold"
+          className="px-5 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 font-semibold"
         >
-          Offer Flames
+          Offer Peace
         </button>
         {availableFlames > 0 && (
-          <p className="mt-2 text-sm text-red-300">
-            🔥 You have {availableFlames} flame{availableFlames > 1 ? 's' : ''} to offer
+          <p className="mt-2 text-sm text-yellow-500">
+            🌸 You have {availableFlames} lotus{availableFlames > 1 ? 'es' : ''} to offer
           </p>
         )}
       </section>
 
       <section className="w-full max-w-3xl mt-4">
-        <h2 className="text-3xl font-bold text-center text-red-500 mb-6">Past Whispers</h2>
+        <h2 className="text-3xl font-bold text-center text-yellow-600 mb-6">Past Reflections</h2>
         <ul className="space-y-6">
-          {temptations.map((t: any, i: number) => (
+          {blessings.map((b: any, i: number) => (
             <li
-              key={t._id || i}
-              id={`temptation-${i}`}
-              className="bg-red-950 p-4 rounded-lg shadow border border-red-800 space-y-2"
+              key={b._id || i}
+              id={`meditation-${i}`}
+              className="bg-yellow-100 p-4 rounded-lg shadow border border-yellow-600 space-y-2"
             >
-              <p className="italic text-red-100 text-lg text-center">“{t.text}”</p>
-              <p className="text-sm text-red-400 text-right">
-                Unleashed on {new Date(t.date).toLocaleDateString()}
+              <p className="italic text-yellow-900 text-lg text-center">“{b.text}”</p>
+              <p className="text-sm text-yellow-600 text-right">
+                Shared on {new Date(b.date).toLocaleDateString()}
               </p>
               <div className="flex justify-end gap-2 flex-wrap">
                 <ShareButton
                   label="Share ↪"
                   icon={null}
-                  link={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://talktodevil.life'}/archive#temptation-${i}`}
-                  className="bg-red-800 hover:bg-red-900 text-white px-3 py-1 text-sm rounded"
+                  link={`${process.env.NEXT_PUBLIC_BASE_URL || 'https://talktobuddha.life'}/archive#meditation-${i}`}
+                  className="bg-yellow-700 hover:bg-yellow-800 text-white px-3 py-1 text-sm rounded"
                 />
                 <button
                   onClick={() => {
-                    setSelectedId(t._id?.toString() || '');
+                    setSelectedId(b._id?.toString() || '');
                     setDonateOpen(true);
                   }}
-                  className="bg-pink-700 hover:bg-pink-800 text-white px-3 py-1 text-sm rounded"
+                  className="bg-amber-700 hover:bg-amber-800 text-white px-3 py-1 text-sm rounded"
                 >
-                  Offer ❤️
+                  Offer Lotus
                 </button>
               </div>
             </li>
