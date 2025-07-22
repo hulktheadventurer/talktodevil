@@ -2,20 +2,25 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import Link from 'next/link';
 import DynamicFooter from '@/components/DynamicFooter';
-import Head from 'next/head';
+
+export const metadata = {
+  title: 'TalkToDevil',
+  description: 'Unleash your secrets in the abyss of digital sin.',
+  openGraph: {
+    title: 'TalkToDevil',
+    description: 'Unleash your secrets in the abyss of digital sin.',
+    images: ['https://www.talktodevil.life/og-image.png'],
+    url: 'https://www.talktodevil.life/',
+    type: 'website',
+  },
+  icons: {
+    icon: '/favicon.png',
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <Head>
-        <title>TalkToDevil</title>
-        <meta property="og:title" content="TalkToDevil" />
-        <meta property="og:description" content="Unleash your secrets in the abyss of digital sin." />
-        <meta property="og:image" content="https://www.talktodevil.life/og-image.png" />
-        <meta property="og:url" content="https://www.talktodevil.life/" />
-        <meta property="og:type" content="website" />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-      </Head>
       <body className="bg-gradient-to-b from-red-900 to-black text-red-50 text-base flex flex-col min-h-screen">
         {/* Watermark */}
         <div
@@ -28,13 +33,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Link href="/" className="flex items-center space-x-3">
             <img src="/devil-logo-horizontal.png" alt="TalkToDevil Logo" className="h-10 w-auto" />
           </Link>
-<nav className="space-x-6 text-base">
-  <Link href="/" className="hover:underline">Home</Link>
-  <Link href="/wall" className="hover:underline">Wall</Link>
-  <Link href="/blessing" className="hover:underline">Temptation</Link>
-  <Link href="/archive" className="hover:underline">Archives</Link>
-</nav>
-
+          <nav className="space-x-6 text-base">
+            <Link href="/" className="hover:underline">Home</Link>
+            <Link href="/wall" className="hover:underline">Wall</Link>
+            <Link href="/blessing" className="hover:underline">Temptation</Link>
+            <Link href="/archive" className="hover:underline">Archives</Link>
+          </nav>
         </header>
 
         {/* Main Content */}
