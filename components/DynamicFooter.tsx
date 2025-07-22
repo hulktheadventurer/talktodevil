@@ -15,29 +15,29 @@ export default function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="bg-amber-800 text-center text-sm text-amber-100 py-4 z-10 relative">
+    <footer className="bg-red-900 text-center text-sm text-red-100 py-4 z-10 relative">
       <div className="flex flex-wrap justify-center items-center gap-4 mb-2">
         <a href="/terms" className="underline">Terms & Privacy</a>
         <a href="/disclaimer" className="underline">Disclaimer</a>
         <button
           onClick={() => setIsDonateOpen(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-1.5 rounded text-sm"
+          className="bg-red-700 hover:bg-red-800 text-white px-4 py-1.5 rounded text-sm"
         >
-          🌸 Offer Lotus
+          🔥 Offer Flame
         </button>
       </div>
 
-      <p className="text-xs text-amber-300 italic mb-1">
-        Every lotus nurtures peace and reflection.
+      <p className="text-xs text-red-300 italic mb-1">
+        Every flame fuels the infernal truth.
       </p>
-      <p className="text-xs italic text-amber-200 mb-3">
-        From the mountain, with calm compassion.
+      <p className="text-xs italic text-red-200 mb-3">
+        From the abyss, with searing honesty.
       </p>
 
       {/* BoredAtWork Universe Section */}
-      <div className="text-amber-100 text-xs">
+      <div className="text-red-100 text-xs">
         <p className="font-semibold mb-1">🌀 BoredAtWork Universe</p>
-        <ul className="space-y-1 text-amber-200">
+        <ul className="space-y-1 text-red-200">
           <li><a href="https://www.talktodevil.life" className="underline">TalkToDevil</a> — Chat with the Devil himself 😈</li>
           <li><a href="https://www.askthedevil.life" className="underline">AskTheDevil</a> — The Devil’s arcade of twisted games 🎮</li>
           <li><a href="https://www.talktogod.life" className="underline">TalkToGod</a> — Divine chats from above ✨</li>
@@ -45,8 +45,8 @@ export default function DynamicFooter() {
           <li><a href="https://www.dreamdecoder.life" className="underline">DreamDecoder</a> — Interpret your weirdest dreams 💤</li>
           <li><a href="https://www.confessly.com" className="underline">Confessly</a> — Whisper to the Father 🙏</li>
         </ul>
-        <p className="text-amber-300 italic mt-2">
-          More mindful apps arriving soon...
+        <p className="text-red-300 italic mt-2">
+          More sinful apps rising soon...
         </p>
       </div>
 

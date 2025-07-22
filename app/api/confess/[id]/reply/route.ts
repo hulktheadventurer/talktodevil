@@ -17,22 +17,22 @@ export async function POST(
 
     const confession = await Confession.findById(params.id);
     if (!confession) {
-      return NextResponse.json({ error: 'Confession not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Temptation not found' }, { status: 404 });
     }
 
-    // Add user message
+    // Log user's sinful whisper
     confession.thread.push({
       role: 'user',
       message,
       timestamp: new Date(),
     });
 
-    // Generate priest reply
+    // The Devil responds...
     const reply = await generateReply(confession.thread);
 
-    // Add priest message
+    // Add Devil's message
     confession.thread.push({
-      role: 'father',
+      role: 'devil',
       message: reply,
       timestamp: new Date(),
     });
@@ -41,9 +41,9 @@ export async function POST(
 
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error('Thread reply error:', err);
+    console.error('Temptation reply error:', err);
     return NextResponse.json(
-      { error: 'Failed to reply to confession' },
+      { error: 'Failed to process the Devil\'s reply' },
       { status: 500 }
     );
   }

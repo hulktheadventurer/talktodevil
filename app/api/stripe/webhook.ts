@@ -37,18 +37,20 @@ export async function POST(req: NextRequest) {
 
     const confessionId = session.metadata?.confessionId || '';
     const amount = Number(session.amount_total) / 100;
-    const lotusCount = parseInt(session.metadata?.lotusCount || '0');
+    const flameCount = parseInt(session.metadata?.candleCount || '0');
 
     try {
       await DonationLog.create({
         sessionId: session.id,
         amount,
-        flameCount: lotusCount, // ✅ Still stored in flameCount field unless you rename DB
+        flameCount, // still using field name 'flameCount'
         source: 'stripe',
         confessionId,
       });
+
+      console.log(`🔥 Logged ${flameCount} flames for temptation ${confessionId}`);
     } catch (err) {
-      console.error('⚠️ Failed to log lotus donation:', err);
+      console.error('⚠️ Failed to log flame offering:', err);
     }
   }
 

@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useDonateModal } from '@/hooks/useDonateModal';
 
 export default function DonateButton() {
@@ -9,9 +8,9 @@ export default function DonateButton() {
   return (
     <button
       onClick={open}
-      className="bg-amber-600 text-white px-4 py-2 rounded-lg shadow hover:bg-amber-700 transition"
+      className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition"
     >
-      🕯️ Donate Candles
+      🔥 Offer Flames
     </button>
   );
 }

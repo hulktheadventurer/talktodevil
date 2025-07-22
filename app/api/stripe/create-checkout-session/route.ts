@@ -13,13 +13,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
     }
 
-    // Estimate lotusCount for stats
-    let lotusCount = 0;
-    if (amount === 0.99) lotusCount = 1;
-    else if (amount === 2.49) lotusCount = 3;
-    else if (amount === 3.99) lotusCount = 5;
-    else if (amount === 6.99) lotusCount = 10;
-    else lotusCount = Math.max(1, Math.floor(amount / 0.99));
+    // Estimate flameCount for stats
+    let flameCount = 0;
+    if (amount === 0.99) flameCount = 1;
+    else if (amount === 2.49) flameCount = 3;
+    else if (amount === 3.99) flameCount = 5;
+    else if (amount === 6.99) flameCount = 10;
+    else flameCount = Math.max(1, Math.floor(amount / 0.99));
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -28,8 +28,8 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'gbp',
             product_data: {
-              name: 'Lotus Offering',
-              description: `Lotuses for reflection ${confessionId || 'general'}`,
+              name: '🔥 Flame Offering',
+              description: `Flames for temptation ${confessionId || 'general'}`,
             },
             unit_amount: Math.round(amount * 100),
           },
@@ -37,17 +37,17 @@ export async function POST(req: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/wall?success=1&lotuses=${lotusCount}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/wall?success=1&candles=${flameCount}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/wall?canceled=1`,
       metadata: {
         confessionId: confessionId || '',
-        lotusCount: String(lotusCount),
+        candleCount: String(flameCount),
       },
     });
 
     return NextResponse.json({ url: session.url });
   } catch (err: any) {
-    console.error('Stripe error:', err?.message || err);
+    console.error('🔥 Stripe session error:', err?.message || err);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
   }
 }

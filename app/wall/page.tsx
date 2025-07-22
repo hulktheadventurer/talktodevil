@@ -34,27 +34,27 @@ export default function WallPage() {
   const [availableDonationCandles, setAvailableDonationCandles] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const fetchConfessions = async () => {
-    try {
-      const res = await fetch('/api/confess/list');
-      const data = await res.json();
+const fetchConfessions = async () => {
+  try {
+    const res = await fetch('/api/confess/list');
+    const data = await res.json();
 
-      if (Array.isArray(data.confessions)) {
-        setConfessions(
-          data.confessions.map((conf: any) => ({
-            ...conf,
-            thread: conf.thread || [
-              { role: 'user', message: conf.message },
-              ...(conf.reply ? [{ role: 'buddha', message: conf.reply }] : []),
-            ],
-          }))
-        );
-        setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 100);
-      }
-    } catch (err) {
-      console.error('🌸 Failed to fetch reflections', err);
+    if (Array.isArray(data.confessions)) {
+      setConfessions(
+        data.confessions.map((conf: any) => ({
+          ...conf,
+          thread: conf.thread || [
+            { role: 'user', message: conf.message },
+            ...(conf.reply ? [{ role: 'devil', message: conf.reply }] : []),
+          ],
+        }))
+      );
     }
-  };
+  } catch (err) {
+    console.error('🔥 Failed to fetch infernal whispers', err);
+  }
+};
+
 
   const fetchDonationCandles = async () => {
     try {
@@ -62,7 +62,7 @@ export default function WallPage() {
       const data = await res.json();
       setAvailableDonationCandles(data.donationCandles || 0);
     } catch (err) {
-      console.error('🌸 Failed to fetch your lotus offerings');
+      console.error('🔥 Failed to fetch your flame offerings');
     }
   };
 
@@ -85,14 +85,14 @@ export default function WallPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 pt-6 pb-12 relative">
-      <h1 className="text-3xl font-bold text-center mb-4 text-yellow-800">🧘 Reflection Wall</h1>
+      <h1 className="text-3xl font-bold text-center mb-4 text-red-700">🔥 Inferno Wall</h1>
 
       <div className="text-center mb-6">
         <button
           onClick={() => setDonateOpen(true)}
-          className="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-6 py-2 rounded shadow"
+          className="bg-red-700 hover:bg-red-800 text-white font-semibold px-6 py-2 rounded shadow"
         >
-          Offer Peace 🪷
+          Summon Chaos 🔥
         </button>
       </div>
 
@@ -110,8 +110,8 @@ export default function WallPage() {
           />
         ))
       ) : (
-        <p className="text-center text-yellow-500 mt-6 italic">
-          The path is quiet... for now.
+        <p className="text-center text-red-500 mt-6 italic">
+          The flames flicker... but no curses have been cast.
         </p>
       )}
 
@@ -120,7 +120,7 @@ export default function WallPage() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-full shadow-lg z-50"
+          className="fixed bottom-6 right-6 bg-red-800 hover:bg-red-900 text-white px-4 py-2 rounded-full shadow-lg z-50"
         >
           ↑ Top
         </button>

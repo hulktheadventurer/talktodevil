@@ -26,8 +26,11 @@ export default function ShareButton({
   };
 
   return (
-    <button onClick={handleShare} className={`flex items-center gap-1 ${className}`}>
-      {copied ? 'Copied!' : (
+    <button
+      onClick={handleShare}
+      className={`flex items-center gap-1 text-sm px-3 py-1 rounded bg-orange-700 hover:bg-orange-800 text-white shadow ${className}`}
+    >
+      {copied ? '🔥 Copied!' : (
         <>
           {label}
           {icon}

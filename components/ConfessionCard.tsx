@@ -16,7 +16,7 @@ function ConfessionCardInner({
   const responseEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`candle-lit-${confession._id}`);
+    const saved = localStorage.getItem(`flame-offered-${confession._id}`);
     if (saved === 'true') setLighted(true);
   }, [confession._id]);
 
@@ -37,13 +37,13 @@ function ConfessionCardInner({
       if (res.ok) {
         setLighted(true);
         setFlameCount((prev: number) => prev + 1);
-        localStorage.setItem(`candle-lit-${confession._id}`, 'true');
-        toast.success('🪷 Lotus offered');
+        localStorage.setItem(`flame-offered-${confession._id}`, 'true');
+        toast.success('🔥 Flame offered');
       } else {
-        toast.error('Failed to offer lotus');
+        toast.error('Failed to offer flame');
       }
     } catch {
-      toast.error('Failed to offer lotus');
+      toast.error('Failed to offer flame');
     }
   };
 
@@ -70,7 +70,10 @@ function ConfessionCardInner({
       });
       const data = await res.json();
       if (res.ok) {
-        setThread([...newThread, { role: 'buddha', message: data.reply, timestamp: new Date() }]);
+        setThread([
+          ...newThread,
+          { role: 'devil', message: data.reply, timestamp: new Date() },
+        ]);
       } else {
         toast.error(data.error || 'Failed to reply');
       }
@@ -82,24 +85,24 @@ function ConfessionCardInner({
   };
 
   return (
-    <div className="bg-yellow-50 text-yellow-900 shadow-lg rounded-xl p-4 mb-4 border border-yellow-300">
+    <div className="bg-red-50 text-red-900 shadow-lg rounded-xl p-4 mb-4 border border-red-300">
       <div className="flex flex-col gap-2">
         {thread.map((t: { role: string; message: string }, idx: number) => (
           <div
             key={idx}
             className={`max-w-[80%] px-4 py-2 rounded-xl text-sm whitespace-pre-wrap ${
               ['father', 'devil', 'god', 'buddha'].includes(t.role)
-                ? 'bg-yellow-100 text-yellow-900 self-start'
-                : 'bg-yellow-600 text-white self-end'
+                ? 'bg-red-100 text-red-900 self-start'
+                : 'bg-red-600 text-white self-end'
             }`}
           >
-            <strong>{t.role === 'user' ? 'You:' : 'Buddha:'}</strong> {t.message}
+            <strong>{t.role === 'user' ? 'You:' : 'Devil:'}</strong> {t.message}
           </div>
         ))}
         <div ref={responseEndRef} />
         {!isWallView && loadingReply && (
-          <div className="italic text-yellow-500 self-start">
-            The Buddha is listening...
+          <div className="italic text-red-600 self-start">
+            The Devil is scheming...
           </div>
         )}
       </div>
@@ -112,13 +115,13 @@ function ConfessionCardInner({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Speak again..."
-              className="flex-1 px-3 py-2 border border-yellow-400 bg-yellow-50 text-yellow-900 rounded"
+              placeholder="Dare to speak again..."
+              className="flex-1 px-3 py-2 border border-red-400 bg-red-50 text-red-900 rounded"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim()}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Send
             </button>
@@ -126,25 +129,25 @@ function ConfessionCardInner({
         </div>
       )}
 
-      <div className="flex justify-between items-end text-sm text-yellow-700 mt-4">
+      <div className="flex justify-between items-end text-sm text-red-700 mt-4">
         <div className="flex flex-col gap-1">
-          <div>🪷 {flameCount}</div>
+          <div>🔥 {flameCount}</div>
         </div>
-        <div className="flex flex-col items-end gap-1 text-xs text-yellow-600">
+        <div className="flex flex-col items-end gap-1 text-xs text-red-600">
           <div>{new Date(confession.createdAt).toLocaleString()}</div>
           <div className="flex gap-2 text-sm">
             <button
               onClick={handleLight}
               disabled={lighted}
-              className={`bg-yellow-600 hover:bg-yellow-700 text-white py-1 px-3 rounded-xl ${
+              className={`bg-red-600 hover:bg-red-700 text-white py-1 px-3 rounded-xl ${
                 lighted ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
-              Offer 🪷
+              Offer 🔥
             </button>
             <button
               onClick={handleShare}
-              className="bg-amber-600 hover:bg-amber-700 text-white py-1 px-3 rounded-xl"
+              className="bg-orange-600 hover:bg-orange-700 text-white py-1 px-3 rounded-xl"
             >
               Share ↪
             </button>
@@ -152,7 +155,7 @@ function ConfessionCardInner({
               onClick={onDonateClick}
               className="bg-orange-700 hover:bg-orange-800 text-white py-1 px-3 rounded-xl"
             >
-              Donate 🪷
+              Donate 🔥
             </button>
           </div>
         </div>

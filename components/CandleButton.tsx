@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 
-export default function CandleButton({
+export default function FlameButton({
   confessionId,
   onLit,
   className = '',
@@ -21,7 +21,7 @@ export default function CandleButton({
   const [glow, setGlow] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`lotus-offered-${confessionId}`);
+    const saved = localStorage.getItem(`flame-offered-${confessionId}`);
     if (saved === 'true') {
       setLit(true);
     }
@@ -40,12 +40,12 @@ export default function CandleButton({
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err?.error || 'Failed to offer lotus');
+        throw new Error(err?.error || 'Failed to offer flame');
       }
 
-      localStorage.setItem(`lotus-offered-${confessionId}`, 'true');
+      localStorage.setItem(`flame-offered-${confessionId}`, 'true');
       setLit(true);
-      toast.success('🪷 Lotus offered');
+      toast.success('🔥 Flame offered');
       onLit?.();
       setGlow(true);
       setTimeout(() => setGlow(false), 600);
@@ -56,7 +56,7 @@ export default function CandleButton({
     }
   };
 
-  const glowClass = glow ? `animate-glow ${glowType ? `glow-${glowType}` : 'text-yellow-500'}` : '';
+  const glowClass = glow ? `animate-glow ${glowType ? `glow-${glowType}` : 'text-red-500'}` : '';
 
   return (
     <button
@@ -64,7 +64,7 @@ export default function CandleButton({
       disabled={lit || loading}
       className={`${glowClass} ${lit || loading ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
     >
-      {loading ? 'Offering...' : small ? '🪷' : 'Offer Lotus 🪷'}
+      {loading ? 'Offering...' : small ? '🔥' : 'Offer Flame 🔥'}
     </button>
   );
 }
