@@ -1,0 +1,69 @@
+[33m20e7161[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m 🔥 Fix: replaced Buddha UI with Devil version
+[33m9ddbcb3[m 🚀 Harmless redeploy trigger
+[33m9c5c715[m Trigger redeploy 🌸
+[33m6961484[m Initial commit for TalkToBuddha
+[33m29e44dd[m Replace favicon with 64x64 version
+[33mf197df5[m Fix favicon for TalkToDevil
+[33md0a4928[m Update OG and Twitter meta tags for TalkToDevil
+[33m018b3aa[m Updated TalkToDevil social sharing image
+[33m908b9df[m Update terms and disclaimer
+[33m1d4a44a[m Resolved README.md conflict
+[33m6cd5cbe[m Initial upload of TalkToDevil
+[33m4836f92[m Initial commit
+[33m29501a4[m Fix: guard searchParams for Suspense build
+[33mf1423c4[m Fix /wall build error with dynamic rendering
+[33m406b414[m Fix: force dynamic + disable fetch caching for /wall
+[33m9275be0[m Fix: force dynamic for useSearchParams
+[33m6ea885a[m Fix: use .set for mongoose DocumentArray thread assignment
+[33mb593b6e[m Fix mongoose subdocument thread typing
+[33mf88cc95[m Fix message type for OpenAI SDK
+[33mf5304c1[m Fix message type for OpenAI SDK
+[33mb7e730e[m Fix TS type for prev in candle count
+[33m17367d2[m Fix admin page export and JSX errors
+[33m429c92d[m Fix type error in thread map rendering
+[33med5ad5f[m Fix type error in admin page for Vercel deploy
+[33m609c62d[m Final polish before deploy
+[33m5ab3d2f[m Fix: add type for idx in thread.map
+[33mdacab82[m Fix: wrap thread.map in JSX
+[33mc33411a[m Fix: type annotation for thread message
+[33m83ecc60[m Update: threaded confessions and wall sync
+[33mc8a7e9a[m Update: support threaded conversations in confession creation
+[33m7247e15[m Update: generateReply now supports conversation threads
+[33mc2e44f6[m Update: convert Confession model to threaded structure
+[33m20abf41[m Update: switch to threaded confession structure
+[33m8871e4d[m Fix: donation refresh and show on Archive
+[33m666244e[m Fix: donation refresh and show on Blessing
+[33m083a55f[m Fix: pass availableDonationCandles to ConfessionCard
+[33mc9526bb[m Fix: remove duplicate fetch, use passed donationCandles
+[33mff52642[m Fix: show available donation candles on Wall
+[33mabc46d6[m Fix: show donation candles on Wall after Stripe
+[33m2e5fc86[m Fix: donation refresh (Blessing, Archive, ConfessionCard)
+[33m4784a76[m Fix deploy: wrap useSearchParams in Suspense
+[33m501362a[m Fix deploy error: searchParams null safe
+[33mb126721[m Final fix: wall donation candle refresh after Stripe
+[33m763d9da[m Fix wall donation candle refresh
+[33md165129[m Fix wall donation candle refresh
+[33mea6758d[m Fix donation candle auto-refresh after Stripe payment
+[33m30ebf11[m Update footer to show total donations
+[33mec1edf8[m Cleaned footer - removed broken candle count
+[33mc9b5556[m Final AI tone with my child + auto language
+[33m47abe5c[m Improve AI reply tone and language
+[33m07a7be7[m Enable full auto language reply
+[33m463902f[m Enable auto language reply in generateReply()
+[33m10a847c[m Inject OG tags in layout.tsx to fix WhatsApp preview
+[33mbbdb637[m Force redeploy to update og:image
+[33m273325c[m Fix og:image URL to og-image.png
+[33m1a30ac9[m Update og-image.png to 1200x630 for WhatsApp preview
+[33mb7c229b[m Add og-image.png for WhatsApp preview
+[33me7c3dd0[m Add OG tags to head.tsx for WhatsApp preview
+[33m416d7be[m Rename favicon.ico to icon.ico for Next.js 14 App Router
+[33m83d584b[m Fix favicon with app/head.tsx
+[33m970ce3a[m Fix favicon using app/head.tsx
+[33m2b04ad3[m Force favicon using head link
+[33mb7badb8[m Add proper favicon.ico
+[33m1f09377[m Fix favicon file name
+[33m7f39709[m Remove unused favicon.ico
+[33m44987c9[m Fix favicon file name
+[33mbd3dd78[m Updated favicon to PNG version
+[33m0eb9b4a[m Final production build
+[33md043583[m Initial commit from Create Next App
